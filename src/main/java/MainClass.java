@@ -16,6 +16,17 @@ public class MainClass {
             e.printStackTrace();
         }
 
+        
+        Controller controll = new Controller();
+        controll.registerLocation("UFRN", "Faculdade");
+        controll.registerLocation("IFRN", "Escola");
+
+        controll.registerCategory("Mobilia", "Móveis", "1122-XMB");
+        controll.registerCategory("Eletrônicos", "Computadores e Impressoras",
+                "1433-YET");
+
+        controll.listLocations();
+        controll.listCategories();
 
     }
 }

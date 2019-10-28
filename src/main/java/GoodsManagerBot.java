@@ -26,11 +26,12 @@ public class GoodsManagerBot extends TelegramLongPollingBot {
                 message.setText(update.getMessage().getFrom().getFirstName());
             }
 
-            //if(command.equals("/cadastrar_bem")){
-            //    message.setText("Digite o nome do bem");
-            //    nome_do_bem = update.getMessage();
-            //    message.setText(update.getMessage.get);
-            //}
+            if(command.equals("/cadastrar_bem")){
+                message.setText("Digite o nome do bem");
+                //nome_do_bem = update.getMessage();
+                //nome_do_bem = update.getMessage();
+                //message.setText(update.getMessage().getFrom().toString(nome_do_bem));
+            }
 
             if (command.equals("/mylastname")){
 
