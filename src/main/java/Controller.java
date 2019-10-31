@@ -4,10 +4,11 @@ public class Controller {
     //arrays para location, category e goods
     ArrayList<Location> locations;
     ArrayList<Category> categories;
-
+    ArrayList<Goods> goods;
     public Controller(){
         locations = new ArrayList();
         categories = new ArrayList();
+        goods = new ArrayList();
     }
 
     /** Register a location.
@@ -36,14 +37,25 @@ public class Controller {
         categories.add(default_category);
     }
 
-    /** Lists all locations running through arraylist locations */
+    /** Register a good.
+     * @param goodsName The goods  name.
+     * @param goodsDescription The goods description.
+     * @param goodsCode The goods code
+     * Precisa colocar a localização e a categoria junto do Bem (Goods.java)
+     */
+    public void registerGood(String goodsName, String goodsDescription, String goodsCode){
+        Goods default_good = new Goods(goodsName, goodsDescription,goodsCode);
+        goods.add(default_good);
+    }
+
+    /** Lists all LOCATIONS running through arraylist locations */
     public void listLocations(){
         for(Location local : locations){
             System.out.println(local.getLocationName() + " - " + local.getLocationDescription() + "\n");
         }
     }
 
-    /** Lists all categories running through arraylist categories */
+    /** Lists all CATEGORIES running through arraylist categories */
     public void listCategories(){
         for(Category category : categories){
             System.out.println(category.getCategoryName() + " - " +
@@ -52,4 +64,12 @@ public class Controller {
         }
     }
 
+    /** List all GOODS running in the arraylist goods */
+    public void listGoods(){
+        for (Goods goods : goods){
+            System.out.println(goods.getGoodsName() + " - " +
+                    goods.getGoodsDescription() + " - " +
+                    goods.getGoodsCode() + "\n");
+        }
+    }
 }

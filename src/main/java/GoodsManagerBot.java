@@ -1,3 +1,4 @@
+import org.telegram.telegrambots.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
@@ -6,9 +7,10 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 public class GoodsManagerBot extends TelegramLongPollingBot {
 
-    Message nome_do_bem;
+    String nome_do_bem;
+    private Object ChatAction;
 
-        public void onUpdateReceived(Update update) {
+    public void onUpdateReceived(Update update) {
 
             System.out.println(update.getMessage().getText()); //escreve a mensagem
             System.out.println(update.getMessage().getFrom().getFirstName() ); //pega o nome do user no telegram
@@ -27,10 +29,12 @@ public class GoodsManagerBot extends TelegramLongPollingBot {
             }
 
             if(command.equals("/cadastrar_bem")){
-                message.setText("Digite o nome do bem");
+                nome_do_bem = update.getMessage().getText();
+                //nome_do_bem = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
                 //nome_do_bem = update.getMessage();
                 //nome_do_bem = update.getMessage();
                 //message.setText(update.getMessage().getFrom().toString(nome_do_bem));
+                System.out.println(nome_do_bem + " teste");
             }
 
             if (command.equals("/mylastname")){

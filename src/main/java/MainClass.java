@@ -25,8 +25,11 @@ public class MainClass {
         controll.registerCategory("Eletrônicos", "Computadores e Impressoras",
                 "1433-YET");
 
+        controll.registerGood("Good", "Good Description", "1808-XWM");
+
         controll.listLocations();
         controll.listCategories();
+        controll.listGoods();
 
     }
 }
