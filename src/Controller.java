@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+import com.pengrad.telegrambot.response.GetUpdatesResponse;
+
 public class Controller {
     //arrays para location, category e goods
     ArrayList<Location> locations;
@@ -13,14 +15,14 @@ public class Controller {
 
     /** Register a location.
      * @param locationName The location's  name.
-     * @param locationDescription The location‚Äôs description.
+     * @param locationDescription The locationís description.
      *
-     *  Esse cadastro foi feito com passagem de par√¢metro porque a gente fica recebendo
-     *                            as v√°riaveis no main, pelo bot, e chama a fun√ß√£o j√°
+     *  Esse cadastro foi feito com passagem de par‚metro porque a gente fica recebendo
+     *                            as v·riaveis no main, pelo bot, e chama a funÁ„o j·
      *                            passando tudo o que precisa.
      *
-     *  Tanto nesse como no pr√≥ximo precisa ter algo pra verificar que s√≥ existe um de cada
-     *                            (teve algo em uma das ultimas aulas dele sobre um jeito padr√£o de fazer isso)
+     *  Tanto nesse como no prÛximo precisa ter algo pra verificar que sÛ existe um de cada
+     *                            (teve algo em uma das ultimas aulas dele sobre um jeito padr„o de fazer isso)
      */
     public void registerLocation(String locationName, String locationDescription){
         Location default_location = new Location(locationName, locationDescription);
@@ -29,7 +31,7 @@ public class Controller {
 
     /** Register a category.
      * @param categoryName The category's  name.
-     * @param categoryDescription The category‚Äôs description.
+     * @param categoryDescription The categoryís description.
      * @param categoryCode The category's code
      */
     public void registerCategory(String categoryName, String categoryDescription, String categoryCode){
@@ -38,13 +40,13 @@ public class Controller {
     }
 
     /** Register a good.
-     * @param goodsName The goods  name.
-     * @param goodsDescription The goods description.
-     * @param goodsCode The goods code
-     * Precisa colocar a localiza√ß√£o e a categoria junto do Bem (Goods.java)
+     * @param nome The goods  name.
+     * @param descricao The goods description.
+     * @param code The goods code
+     * Precisa colocar a localizaÁ„o e a categoria junto do Bem (Goods.java)
      */
-    public void registerGood(String goodsName, String goodsDescription, String goodsCode){
-        Goods default_good = new Goods(goodsName, goodsDescription,goodsCode);
+    public void registerGood(String nome, String descricao, String code){
+        Goods default_good = new Goods(nome, descricao,code);
         goods.add(default_good);
     }
 

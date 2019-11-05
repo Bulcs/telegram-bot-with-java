@@ -7,10 +7,10 @@ public class Goods {
 
     /** Creates a good.
      * @param goodsName The good's  name.
-     * @param goodsDescription The goodâ€™s description.
+     * @param goodsDescription The good’s description.
      * @param goodsCode The good's code
      *
-     * NÃ£o fiz a parte de localizaÃ§Ã£o e categoria porque vai ter que fazer um rolÃª de exceÃ§Ã£o
+     * Não fiz a parte de localização e categoria porque vai ter que fazer um rolê de exceção
      *                  (pra ver se as coisas que a pessoa ta passando existem) e porque tem que ver
      *                  como vai fazer pra buscar isso direitinho
      */
@@ -33,3 +33,4 @@ public class Goods {
     }
 
 }
+
