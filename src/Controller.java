@@ -66,12 +66,9 @@ public class Controller {
         }
     }
 
-    /** List all GOODS running in the arraylist goods */
-    public void listGoods(){
-        for (Goods goods : goods){
-            System.out.println(goods.getGoodsName() + " - " +
-                    goods.getGoodsDescription() + " - " +
-                    goods.getGoodsCode() + "\n");
-        }
+    /** List all GOODS running in the arraylist goods 
+     * @return */
+    public ArrayList<Goods> listGoods(){
+    	return goods;
     }
 }

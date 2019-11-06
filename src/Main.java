@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,6 +28,9 @@ public class Main {
 		//objeto responsável por gerenciar o envio de ações do chat
 		BaseResponse baseResponse;
 		
+		//testando
+		GetUpdatesResponse usersResponse;
+		
 		//controle de off-set, isto é, a partir deste ID serão lido as mensagens pendentes na fila
 		int m=0;
 		//criacao do controlador
@@ -48,8 +52,8 @@ public class Main {
 				
 				//System.out.println("Recebendo mensagem:"+ update.message().text());
 				
+	
 				if(update.message().text().equals("/cadastrar_bem")) {
-						
 							bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome do bem: "));
 							//AINDA NAO TO CONSEGUINDO PEGAR A MENSAGEM, TA PEGANDO APENAS O /CADASTRAR_BEM E IMPLEMENTANDO EM NOME, DESCRICAO E CODE
 							String nome = update.message().text();
@@ -60,11 +64,21 @@ public class Main {
 							bot.execute(new SendMessage(update.message().chat().id(),"Digite o codigo do bem: "));
 							String code = update.message().text();
 							
-							controll.registerGood(nome, descricao, code);
+							
+							controll.registerGood("nome", "desc", "code");
 				}
-				else if(update.message().text().equals("/listarbens")) {
+				else if(update.message().text().equals("/listar_bens")) {
 					try {
-						controll.listGoods();
+						ArrayList <Goods> goodsList = controll.listGoods();
+						for (Goods goods : goodsList){
+							String name = goods.getGoodsName();
+							String description = goods.getGoodsDescription();
+							String code = goods.getGoodsCode();
+							
+							bot.execute(new SendMessage(update.message().chat().id(), 
+									name + " " + description + " " + code));
+						}
+
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
