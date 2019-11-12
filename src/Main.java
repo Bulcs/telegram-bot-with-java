@@ -17,6 +17,11 @@ import com.pengrad.telegrambot.response.SendResponse;
 public class Main {
 
 	public static void main(String[] args) {
+		
+		STATE status = STATE.NULL;
+		String name = "null";
+		String description = "null";
+		String code = "null";
 
 		//Criação do objeto bot com as informações de acesso
 		TelegramBot bot = TelegramBotAdapter.build("909350681:AAHgxlxiLrG7oZtaC6EwyBUrPEbMjVILUCA");
@@ -43,58 +48,117 @@ public class Main {
 			
 			//lista de mensagens
 			List<Update> updates = updatesResponse.updates();
-			
+		
 			//análise de cada ação da mensagem
 			for (Update update : updates) {
-				
 				//atualização do off-set
 				m = update.updateId()+1;
 				
 				//System.out.println("Recebendo mensagem:"+ update.message().text());
 				
-	
-				if(update.message().text().equals("/cadastrar_bem")) {
-							bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome do bem: "));
-							//AINDA NAO TO CONSEGUINDO PEGAR A MENSAGEM, TA PEGANDO APENAS O /CADASTRAR_BEM E IMPLEMENTANDO EM NOME, DESCRICAO E CODE
-							String nome = update.message().text();
-							
-							bot.execute(new SendMessage(update.message().chat().id(),"Digite a descrição do bem: "));
-							String descricao = update.message().text();
-							
-							bot.execute(new SendMessage(update.message().chat().id(),"Digite o codigo do bem: "));
-							String code = update.message().text();
-							
-							
-							controll.registerGood("nome", "desc", "code");
-				}
-				else if(update.message().text().equals("/listar_bens")) {
-					try {
-						ArrayList <Goods> goodsList = controll.listGoods();
-						for (Goods goods : goodsList){
-							String name = goods.getGoodsName();
-							String description = goods.getGoodsDescription();
-							String code = goods.getGoodsCode();
-							
-							bot.execute(new SendMessage(update.message().chat().id(), 
-									name + " " + description + " " + code));
+				if(status == STATE.NULL) {
+					
+					if(update.message().text().equals("/cadastrar_bem")) {
+						bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome do bem: "));
+						status = STATE.WAITING_GOOD_NAME;
+					}
+					
+					else if(update.message().text().equals("/cadastrar_localizacao")) {
+						bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome da localização: "));
+						status = STATE.WAITING_LOCAL_NAME;
+					}
+					
+					else if(update.message().text().equals("/cadastrar_categoria")) {
+						bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome da categoria: "));
+						status = STATE.WAITING_CATEGORY_NAME;
+					}
+						
+					else if(update.message().text().equals("/listar_bens")) {
+						try {
+							ArrayList <Goods> goodsList = controll.listGoods();
+							for (Goods goods : goodsList){
+								String goodsName = goods.getGoodsName();
+								String goodsDescription = goods.getGoodsDescription();
+								String goodsCode = goods.getGoodsCode();
+								
+								bot.execute(new SendMessage(update.message().chat().id(), 
+										goodsName + " " + goodsDescription + " " + goodsCode));
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-
-					} catch (Exception e) {
-						e.printStackTrace();
 					}
 				}
-				/*
-				System.out.println("mensagem enviada: " + update.message().text());
-				//envio de "Escrevendo" antes de enviar a resposta
-				baseResponse = bot.execute(new SendChatAction(update.message().chat().id(), ChatAction.typing.name()));
-				//verificação de ação de chat foi enviada com sucesso
-				System.out.println("Resposta de Chat Action Enviada?" + baseResponse.isOk());
 				
-				//envio da mensagem de resposta
-				sendResponse = bot.execute(new SendMessage(update.message().chat().id(),"Teste"));
-				//verificação de mensagem enviada com sucesso
-				System.out.println("Mensagem Enviada?" +sendResponse.isOk());
-				*/
+						
+				else if(status == STATE.WAITING_GOOD_NAME) {
+					name = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(), 
+							"Digite a descrição do bem: "));
+					
+					status = STATE.WAITING_GOOD_DESCRIPTION;
+					
+				} else if (status == STATE.WAITING_GOOD_DESCRIPTION) {
+					
+					description = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Digite o código do bem:"));
+					
+					status = STATE.WAITING_GOOD_CODE;
+					
+				} else if(status == STATE.WAITING_GOOD_CODE) {
+					
+					code = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Cadastrado com sucesso!"));			
+					controll.registerGood(name, description, code);
+					
+					status = STATE.NULL;
+				}
+				
+				else if(status == STATE.WAITING_LOCAL_NAME) {
+					name = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(), 
+							"Digite a descrição do local: "));
+					
+					status = STATE.WAITING_LOCAL_DESCRIPTION;
+					
+				} else if (status == STATE.WAITING_LOCAL_DESCRIPTION) {
+					
+					description = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Cadastrado com sucesso!"));	
+					
+					controll.registerLocation(name, description);
+					
+					status = STATE.NULL;
+				}
+				
+				else if(status == STATE.WAITING_CATEGORY_NAME) {
+					name = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(), 
+							"Digite a descrição da categoria: "));
+					
+					status = STATE.WAITING_CATEGORY_DESCRIPTION;
+					
+				} else if (status == STATE.WAITING_CATEGORY_DESCRIPTION) {
+					
+					description = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Digite o código da categoria:"));
+					
+					status = STATE.WAITING_CATEGORY_CODE;
+					
+				} else if(status == STATE.WAITING_CATEGORY_CODE) {
+					
+					code = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Cadastrado com sucesso!"));			
+					controll.registerCategory(name, description, code);
+					
+					status = STATE.NULL;
+				}
+
 			}
 
 		}
