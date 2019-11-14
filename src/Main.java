@@ -18,10 +18,15 @@ public class Main {
 
 	public static void main(String[] args) {
 		
+		/*
+		 *Declaração de variáveis que serão utilizadas para receber os valores
+		 *que o usuário digita.
+		 * */
 		STATE status = STATE.NULL;
 		String name = "null";
 		String description = "null";
 		String code = "null";
+		String location = "null";
 
 		//Criação do objeto bot com as informações de acesso
 		TelegramBot bot = TelegramBotAdapter.build("909350681:AAHgxlxiLrG7oZtaC6EwyBUrPEbMjVILUCA");
@@ -55,8 +60,13 @@ public class Main {
 				m = update.updateId()+1;
 				
 				//System.out.println("Recebendo mensagem:"+ update.message().text());
-				
-				if(status == STATE.NULL) {
+
+				/* @TOFIX
+				 * Tem que mudar aqui essa definição de entrada (porque nao
+				 * da pra ficar botando um OU pra cada estado de STATE)
+				 * */
+				if(status == STATE.NULL || status == STATE.LIST) {
+					
 					
 					if(update.message().text().equals("/cadastrar_bem")) {
 						bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome do bem: "));
@@ -74,18 +84,39 @@ public class Main {
 					}
 						
 					else if(update.message().text().equals("/listar_bens")) {
+						
 						try {
 							ArrayList <Goods> goodsList = controll.listGoods();
 							for (Goods goods : goodsList){
-								String goodsName = goods.getGoodsName();
-								String goodsDescription = goods.getGoodsDescription();
-								String goodsCode = goods.getGoodsCode();
-								
 								bot.execute(new SendMessage(update.message().chat().id(), 
-										goodsName + " " + goodsDescription + " " + goodsCode));
+										goods.getGoodsName() + " " +
+										goods.getGoodsDescription() +
+										" " + goods.getGoodsCode()));
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
+						}
+					}
+					
+					else if(update.message().text().equals("/listar_localizacoes")  || status == STATE.LIST) {		
+						try {
+							ArrayList <Location> locationList = controll.listLocations();
+							for (Location local: locationList){
+								bot.execute(new SendMessage(update.message().chat().id(), 
+										local.getLocationName() + " " +
+										local.getLocationDescription()));
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
+						if(status == STATE.LIST){
+							
+							bot.execute(new SendMessage(update.message().chat().id(), 
+									"Digite o nome da localização que está associada ao bem que você deseja cadastrar:"));
+							status = STATE.WAITING_LOCATION;
+						} else {
+							status = STATE.NULL;
 						}
 					}
 				}
@@ -110,9 +141,17 @@ public class Main {
 					
 					code = update.message().text();
 					bot.execute(new SendMessage(update.message().chat().id(),
-							"Cadastrado com sucesso!"));			
+							"Aperte qualquer tecla para listar as localizaçôes"));	
+					
 					controll.registerGood(name, description, code);
 					
+					status = STATE.LIST;
+				/*@TOFIX*/	
+				} else if(status == STATE.WAITING_LOCATION) {
+					
+					location = update.message().text();
+					 
+					//aqui precisa verificar se a pessoa digitou algo que existe
 					status = STATE.NULL;
 				}
 				

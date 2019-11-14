@@ -51,10 +51,8 @@ public class Controller {
     }
 
     /** Lists all LOCATIONS running through arraylist locations */
-    public void listLocations(){
-        for(Location local : locations){
-            System.out.println(local.getLocationName() + " - " + local.getLocationDescription() + "\n");
-        }
+    public ArrayList<Location> listLocations(){
+    	return locations;
     }
 
     /** Lists all CATEGORIES running through arraylist categories */
