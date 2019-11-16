@@ -1,3 +1,4 @@
+package View;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,9 +15,13 @@ import com.pengrad.telegrambot.response.GetChatResponse;
 import com.pengrad.telegrambot.response.GetUpdatesResponse;
 import com.pengrad.telegrambot.response.SendResponse;
 
+import Controller.Categories;
+import Controller.Goods;
+import Controller.Locations;
 import Model.Category;
 import Model.Good;
 import Model.Location;
+import Model.STATE;
 
 public class Main {
 	public static void main(String[] args) {
@@ -50,7 +55,10 @@ public class Main {
 		int m=0;
 		
 		//criacao do controlador
-		Controller controll = new Controller();
+		//Controller controll = new Controller();
+		Goods controllGoods = new Goods();
+		Categories controllCategories = new Categories();
+		Locations controllLocations = new Locations();
 		
 		/*
 		 * Loop infinito, pode ser alterado por algum timer de intervalo curto,
@@ -101,12 +109,14 @@ public class Main {
 				else if(update.message().text().equals("/listar_bens")) {
 						
 					try {
-						ArrayList <Good> goodsList = controll.listGoods();
+						ArrayList <Good> goodsList = controllGoods.list();
 						for (Good goods : goodsList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
 									goods.getGoodsName() + " " +
-									goods.getGoodsDescription() +
-									" " + goods.getGoodsCode()));
+									goods.getGoodsDescription() + " " +
+									goods.getGoodsCode() + " " +
+									goods.getGoodsLocation() + " " +
+									goods.getGoodsCategory()));
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -115,7 +125,7 @@ public class Main {
 					
 				else if(update.message().text().equals("/listar_localizacoes")  || status == STATE.LIST_LOCATIONS) {		
 					try {
-						ArrayList <Location> locationList = controll.listLocations();
+						ArrayList <Location> locationList = controllLocations.list();
 						for (Location local: locationList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
 									local.getLocationName() + " " +
@@ -137,7 +147,7 @@ public class Main {
 				
 				else if(update.message().text().equals("/listar_categorias")  || status == STATE.LIST_CATEGORIES) {		
 					try {
-						ArrayList <Category> categoriesList = controll.listCategories();
+						ArrayList <Category> categoriesList = controllCategories.list();
 						for (Category gCategory: categoriesList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
 									gCategory.getCategoryName() + " " +
@@ -151,7 +161,7 @@ public class Main {
 					if(status == STATE.LIST_CATEGORIES){
 							
 						bot.execute(new SendMessage(update.message().chat().id(), 
-								"Digite o nome da categories que está associada ao bem que "
+								"Digite o nome da categoria que está associada ao bem que "
 								+ "você deseja cadastrar:"));
 						status = STATE.WAITING_CATEGORY;
 					} else {
@@ -201,7 +211,7 @@ public class Main {
 							"Bem cadastrado com sucesso!")); 
 					//aqui precisa verificar se a pessoa digitou algo que existe
 					
-					controll.registerGood(name, description, code, location, category);
+					controllGoods.register(name, description, code, location, category);
 					status = STATE.NULL;
 				}
 					
@@ -222,7 +232,7 @@ public class Main {
 					bot.execute(new SendMessage(update.message().chat().id(),
 							"Cadastrado com sucesso!"));	
 						
-					controll.registerLocation(name, description);
+					controllLocations.register(name, description);
 					
 					status = STATE.NULL;
 				}
@@ -252,7 +262,7 @@ public class Main {
 					bot.execute(new SendMessage(update.message().chat().id(),
 							"Cadastrado com sucesso!"));	
 					
-					controll.registerCategory(name, description, code);
+					controllCategories.register(name, description, code);
 						
 					status = STATE.NULL;
 				}

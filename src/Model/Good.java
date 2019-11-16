@@ -36,6 +36,14 @@ public class Good {
     public String getGoodsCode(){
         return this.goodsCode;
     }
+    
+    public String getGoodsLocation() {
+    	return this.goodsLocation;
+    }
+    
+    public String getGoodsCategory() {
+    	return this.goodsCategory;
+    }
 
 }
 
