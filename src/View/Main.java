@@ -112,11 +112,11 @@ public class Main {
 						ArrayList <Good> goodsList = controllGoods.list();
 						for (Good goods : goodsList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
-									goods.getGoodsName() + " " +
-									goods.getGoodsDescription() + " " +
-									goods.getGoodsCode() + " " +
-									goods.getGoodsLocation() + " " +
-									goods.getGoodsCategory()));
+									"Nome: " + goods.getGoodsName() + 
+									" | Descrição: " + goods.getGoodsDescription() + 
+									" | Código: " + goods.getGoodsCode() + 
+									" | Localização: " + goods.getGoodsLocation() + 
+									" | Categoria: " + goods.getGoodsCategory()));
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -128,8 +128,8 @@ public class Main {
 						ArrayList <Location> locationList = controllLocations.list();
 						for (Location local: locationList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
-									local.getLocationName() + " " +
-									local.getLocationDescription()));
+									"Localização: " + local.getLocationName() + 
+									" | Descrição: " + local.getLocationDescription()));
 							}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -150,9 +150,9 @@ public class Main {
 						ArrayList <Category> categoriesList = controllCategories.list();
 						for (Category gCategory: categoriesList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
-									gCategory.getCategoryName() + " " +
-									gCategory.getCategoryDescription() +
-									" " + gCategory.getCategoryCode()));
+									"Categoria: " + gCategory.getCategoryName() + 
+									" | Descrição: " +	gCategory.getCategoryDescription() +
+									" | Código: " + gCategory.getCategoryCode()));
 							}
 					} catch (Exception e) {
 						e.printStackTrace();
