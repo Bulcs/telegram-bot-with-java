@@ -2,11 +2,15 @@ import java.util.ArrayList;
 
 import com.pengrad.telegrambot.response.GetUpdatesResponse;
 
+import Model.Category;
+import Model.Good;
+import Model.Location;
+
 public class Controller {
     //arrays para location, category e goods
     ArrayList<Location> locations;
     ArrayList<Category> categories;
-    ArrayList<Goods> goods;
+    ArrayList<Good> goods;
     public Controller(){
         locations = new ArrayList();
         categories = new ArrayList();
@@ -45,8 +49,8 @@ public class Controller {
      * @param code The goods code
      * Precisa colocar a localização e a categoria junto do Bem (Goods.java)
      */
-    public void registerGood(String nome, String descricao, String code){
-        Goods default_good = new Goods(nome, descricao,code);
+    public void registerGood(String nome, String descricao, String code, String location, String category){
+        Good default_good = new Good(nome, descricao,code, location, category);
         goods.add(default_good);
     }
 
@@ -56,17 +60,14 @@ public class Controller {
     }
 
     /** Lists all CATEGORIES running through arraylist categories */
-    public void listCategories(){
-        for(Category category : categories){
-            System.out.println(category.getCategoryName() + " - " +
-                    category.getCategoryDescription() + " - " +
-                    category.getCategoryCode() + "\n");
-        }
+    public ArrayList<Category> listCategories(){
+    	return categories;
     }
+
 
     /** List all GOODS running in the arraylist goods 
      * @return */
-    public ArrayList<Goods> listGoods(){
+    public ArrayList<Good> listGoods(){
     	return goods;
     }
 }

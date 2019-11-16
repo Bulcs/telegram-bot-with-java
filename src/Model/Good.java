@@ -1,9 +1,11 @@
-public class Goods {
+package Model;
+public class Good {
     private String goodsName;
     private String goodsDescription;
     private String goodsCode;
-    private Category goodsCategory;
-    private Location goodsLocation;
+    private String goodsLocation;
+    private String goodsCategory;
+    
 
     /** Creates a good.
      * @param goodsName The good's  name.
@@ -14,10 +16,13 @@ public class Goods {
      *                  (pra ver se as coisas que a pessoa ta passando existem) e porque tem que ver
      *                  como vai fazer pra buscar isso direitinho
      */
-    public Goods(String goodsName, String goodsDescription, String goodsCode){
+    public Good(String goodsName, String goodsDescription, String goodsCode, 
+    		String goodsLocation, String goodsCategory){
         this.goodsName = goodsName;
         this.goodsDescription = goodsDescription;
         this.goodsCode = goodsCode;
+        this.goodsLocation = goodsLocation;
+        this.goodsCategory = goodsCategory;
     }
 
     public String getGoodsName(){
