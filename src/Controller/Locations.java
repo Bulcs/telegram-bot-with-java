@@ -1,6 +1,8 @@
 package Controller;
 import java.util.ArrayList;
 
+import Exceptions.EmptyList;
+import Exceptions.OffTheList;
 import Model.Location;
 
 public class Locations extends Controller{
@@ -24,6 +26,24 @@ public class Locations extends Controller{
     public ArrayList<Location> list(){
     	return locations;
     }
+
+	@Override
+	public boolean findByName(String searchName) throws OffTheList{
+		for (Location local: locations) {
+			if(local.getLocationName().equals(searchName)) {
+				return true;
+			}
+		} 
+
+		throw new OffTheList("Parece que a localização que você buscou não existe, tente novamente.");
+	}
+	
+	@Override
+	public void sizeOfList() throws EmptyList {
+		if(locations.size() == 0) {
+			throw new EmptyList("Não há nenhuma localização cadastrada ainda!");
+		}
+	}
 
 
 	

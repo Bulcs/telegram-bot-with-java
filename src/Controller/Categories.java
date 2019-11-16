@@ -1,8 +1,10 @@
 package Controller;
 
 import java.util.ArrayList;
-import Model.Category;
 
+import Exceptions.EmptyList;
+import Exceptions.OffTheList;
+import Model.Category;
 
 public class Categories extends Controller {
 
@@ -27,4 +29,21 @@ public class Categories extends Controller {
     public ArrayList<Category> list(){
     	return categories;
     }
+
+	@Override
+	public boolean findByName(String searchName) throws OffTheList{
+		for (Category category: categories) {
+			if(category.getCategoryName().equals(searchName)) {
+				return true;
+			}
+		}
+		throw new OffTheList("Parece que a categoria que você buscou não existe, tente novamente.");
+	}
+	
+	@Override
+	public void sizeOfList() throws EmptyList {
+		if(categories.size() == 0) {
+			throw new EmptyList("Não há nenhuma categoria cadastrada ainda!");
+		}
+	}
 }

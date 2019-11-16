@@ -18,6 +18,8 @@ import com.pengrad.telegrambot.response.SendResponse;
 import Controller.Categories;
 import Controller.Goods;
 import Controller.Locations;
+import Exceptions.EmptyList;
+import Exceptions.OffTheList;
 import Model.Category;
 import Model.Good;
 import Model.Location;
@@ -46,7 +48,6 @@ public class Main {
 		 * BaseResponse: responsável por gerenciar o envio de ações do chat
 		 * */
 		GetUpdatesResponse updatesResponse;
-		
 		//SendResponse sendResponse:
 		//BaseResponse baseResponse;
 		
@@ -54,8 +55,9 @@ public class Main {
 		//controle de off-set, isto é, a partir deste ID serão lido as mensagens pendentes na fila
 		int m=0;
 		
-		//criacao do controlador
-		//Controller controll = new Controller();
+		/*
+		 * Controladores para cada uma das classes
+		 * */
 		Goods controllGoods = new Goods();
 		Categories controllCategories = new Categories();
 		Locations controllLocations = new Locations();
@@ -85,12 +87,6 @@ public class Main {
 				//atualização do off-set
 				m = update.updateId()+1;
 				
-
-				/* @TOFIX
-				 * Tem que mudar aqui essa definição de entrada (porque nao
-				 * da pra ficar botando um OU pra cada estado de STATE)
-				 * */
-
 				if(update.message().text().equals("/cadastrar_bem")) {
 					bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome do bem: "));
 					status = STATE.WAITING_GOOD_NAME;
@@ -109,30 +105,41 @@ public class Main {
 				else if(update.message().text().equals("/listar_bens")) {
 						
 					try {
+						controllGoods.sizeOfList();
 						ArrayList <Good> goodsList = controllGoods.list();
 						for (Good goods : goodsList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
 									"Nome: " + goods.getGoodsName() + 
-									" | Descrição: " + goods.getGoodsDescription() + 
-									" | Código: " + goods.getGoodsCode() + 
-									" | Localização: " + goods.getGoodsLocation() + 
-									" | Categoria: " + goods.getGoodsCategory()));
+									"\n| Descrição: " + goods.getGoodsDescription() + 
+									"\n| Código: " + goods.getGoodsCode() + 
+									"\n| Localização: " + goods.getGoodsLocation() + 
+									"\n| Categoria: " + goods.getGoodsCategory() + "\n"));
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
+					} catch (EmptyList e) {
+						bot.execute(new SendMessage(update.message().chat().id(), e.getMessage()));
+						status = STATE.NULL;
 					}
 				}
 					
 				else if(update.message().text().equals("/listar_localizacoes")  || status == STATE.LIST_LOCATIONS) {		
+					
 					try {
+						controllLocations.sizeOfList();
 						ArrayList <Location> locationList = controllLocations.list();
 						for (Location local: locationList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
 									"Localização: " + local.getLocationName() + 
-									" | Descrição: " + local.getLocationDescription()));
+									"\n| Descrição: " + local.getLocationDescription()));
 							}
-					} catch (Exception e) {
-						e.printStackTrace();
+					} catch (EmptyList e) {
+						bot.execute(new SendMessage(update.message().chat().id(), e.getMessage()));
+						
+						if(status == STATE.LIST_LOCATIONS) {
+							bot.execute(new SendMessage(update.message().chat().id(), "Por favor, cadastre uma localização antes "
+									+ "de tentar cadastrar um bem."));
+						}
+
+						status = STATE.NULL;
 					}
 	
 					if(status == STATE.LIST_LOCATIONS){
@@ -147,15 +154,24 @@ public class Main {
 				
 				else if(update.message().text().equals("/listar_categorias")  || status == STATE.LIST_CATEGORIES) {		
 					try {
+						
+						controllCategories.sizeOfList();
 						ArrayList <Category> categoriesList = controllCategories.list();
 						for (Category gCategory: categoriesList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
 									"Categoria: " + gCategory.getCategoryName() + 
-									" | Descrição: " +	gCategory.getCategoryDescription() +
-									" | Código: " + gCategory.getCategoryCode()));
+									"\n| Descrição: " +	gCategory.getCategoryDescription() +
+									"\n| Código: " + gCategory.getCategoryCode()));
 							}
-					} catch (Exception e) {
-						e.printStackTrace();
+					} catch (EmptyList e) {
+						bot.execute(new SendMessage(update.message().chat().id(), e.getMessage()));
+						
+						if(status == STATE.LIST_CATEGORIES) {
+							bot.execute(new SendMessage(update.message().chat().id(), "Por favor, cadastre uma categoria antes "
+									+ "de tentar cadastrar um bem."));
+						}
+						
+						status = STATE.NULL;
 					}
 	
 					if(status == STATE.LIST_CATEGORIES){
@@ -199,20 +215,46 @@ public class Main {
 				/*@TOFIX*/	
 				} else if(status == STATE.WAITING_LOCATION) {
 						
-					location = update.message().text();
-					bot.execute(new SendMessage(update.message().chat().id(),
-							"Aperte qualquer tecla para listar as categorias")); 
-					//aqui precisa verificar se a pessoa digitou algo que existe
-					status = STATE.LIST_CATEGORIES;
+					location = update.message().text();		
+					
+					try{
+						controllLocations.findByName(location);
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar as categorias")); 
+					
+						status = STATE.LIST_CATEGORIES;
+						
+					} catch (OffTheList e) {
+						
+						bot.execute(new SendMessage(update.message().chat().id(),
+								e.getMessage()));
+						
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar as localizaçôes"));
+						
+						status = STATE.LIST_LOCATIONS;
+					}
+
 					
 				} else if(status == STATE.WAITING_CATEGORY) {
 					category = update.message().text();
-					bot.execute(new SendMessage(update.message().chat().id(),
-							"Bem cadastrado com sucesso!")); 
-					//aqui precisa verificar se a pessoa digitou algo que existe
 					
-					controllGoods.register(name, description, code, location, category);
-					status = STATE.NULL;
+					try{
+						controllCategories.findByName(category);
+						bot.execute(new SendMessage(update.message().chat().id(),"Bem cadastrado com sucesso!")); 
+						controllGoods.register(name, description, code, location, category);
+						status = STATE.NULL;
+						
+					} catch(OffTheList e) {
+						
+						bot.execute(new SendMessage(update.message().chat().id(),
+								e.getMessage()));
+						
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar as categorias"));
+						
+						status = STATE.LIST_CATEGORIES;
+					}
 				}
 					
 				

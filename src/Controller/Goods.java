@@ -2,7 +2,9 @@ package Controller;
 
 import java.util.ArrayList;
 
+import Exceptions.EmptyList;
 import Model.Good;
+
 
 
 public class Goods extends Controller{
@@ -29,5 +31,21 @@ public class Goods extends Controller{
     public ArrayList<Good> list(){
     	return goods;
     }
+	
+	@Override
+	public boolean findByName(String searchName){
+		for (Good good: goods) {
+			if(good.getGoodsName().equals(searchName)) {
+				return true;
+			}
+		} return false;
+	}
+	
+	@Override
+	public void sizeOfList() throws EmptyList {
+		if(goods.size() == 0) {
+			throw new EmptyList("Não há nenhum bem cadastrado ainda!");
+		}
+	}
 
 }
