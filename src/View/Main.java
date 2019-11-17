@@ -29,8 +29,8 @@ public class Main {
 	public static void main(String[] args) {
 		
 		/*
-		 *DeclaraÁ„o de vari·veis que ser„o utilizadas para receber os valores
-		 *que o usu·rio digita.
+		 *Declara√ß√£o de vari√°veis que ser√£o utilizadas para receber os valores
+		 *que o usu√°rio digita.
 		 * */
 		STATE status = STATE.NULL;
 		String name = "null";
@@ -39,21 +39,21 @@ public class Main {
 		String location = "null";
 		String category = "null";
 
-		//CriaÁ„o do objeto bot com as informaÁıes de acesso
+		//Cria√ß√£o do objeto bot com as informa√ß√µes de acesso
 		TelegramBot bot = TelegramBotAdapter.build("909350681:AAHgxlxiLrG7oZtaC6EwyBUrPEbMjVILUCA");
 
 		/*
-		 * GetUpdatesResponse: objeto respons·vel por receber as mensagens
-		 * SendResponse: objeto respons·vel por gerenciar o envio de respostas
-		 * BaseResponse: respons·vel por gerenciar o envio de aÁıes do chat
+		 * GetUpdatesResponse: objeto respons√°vel por receber as mensagens
+		 * SendResponse: objeto respons√°vel por gerenciar o envio de respostas
+		 * BaseResponse: respons√°vel por gerenciar o envio de a√ß√µes do chat
 		 * */
 		GetUpdatesResponse updatesResponse;
 		//SendResponse sendResponse:
 		//BaseResponse baseResponse;
 		
 		
-		//controle de off-set, isto È, a partir deste ID ser„o lido as mensagens pendentes na fila
-		int m=0;
+		//controle de off-set, isto √©, a partir deste ID ser√£o lido as mensagens pendentes na fila
+		int m = 0;
 		
 		/*
 		 * Controladores para cada uma das classes
@@ -64,12 +64,12 @@ public class Main {
 		
 		/*
 		 * Loop infinito, pode ser alterado por algum timer de intervalo curto,
-		 * 				funciona para receber tudo o que acontece de interaÁ„o bot-usu·rio
+		 * 				funciona para receber tudo o que acontece de intera√ß√£o bot-usu√°rio
 		 * 
 		 * updatesResponse: executa comando no Telegram para obter as mensagens
 		 * 				pendentes a partir de um off-set (limite inicial)
 		 * 
-		 * updates: lista de mensagens/updates do usu·rio
+		 * updates: lista de mensagens/updates do usu√°rio
 		 */
 		while (true){
 
@@ -78,13 +78,13 @@ public class Main {
 			List<Update> updates = updatesResponse.updates();
 		
 			/*
-			 * Cada input do usu·rio atravÈs do bot resulta em uma aÁ„o, esse 
-			 * 		for funciona para analisar essas aÁıes e realizar a aÁ„o
-			 * 		necess·ria.
+			 * Cada input do usu√°rio atrav√©s do bot resulta em uma a√ß√£o, esse 
+			 * 		for funciona para analisar essas a√ß√µes e realizar a a√ß√£o
+			 * 		necess√°ria.
 			 */
 			for (Update update : updates) {
 				
-				//atualizaÁ„o do off-set
+				//atualiza√ß√£o do off-set
 				m = update.updateId()+1;
 				
 				if(update.message().text().equals("/cadastrar_bem")) {
@@ -93,7 +93,7 @@ public class Main {
 				}
 					
 				else if(update.message().text().equals("/cadastrar_localizacao")) {
-					bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome da localizaÁ„o: "));
+					bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome da localiza√ß√£o: "));
 					status = STATE.WAITING_LOCAL_NAME;
 				}
 					
@@ -110,9 +110,9 @@ public class Main {
 						for (Good goods : goodsList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
 									"Nome: " + goods.getGoodsName() + 
-									"\n| DescriÁ„o: " + goods.getGoodsDescription() + 
-									"\n| CÛdigo: " + goods.getGoodsCode() + 
-									"\n| LocalizaÁ„o: " + goods.getGoodsLocation() + 
+									"\n| Descri√ß√£o: " + goods.getGoodsDescription() + 
+									"\n| C√≥digo: " + goods.getGoodsCode() + 
+									"\n| Localiza√ß√£o: " + goods.getGoodsLocation() + 
 									"\n| Categoria: " + goods.getGoodsCategory() + "\n"));
 						}
 					} catch (EmptyList e) {
@@ -120,7 +120,28 @@ public class Main {
 						status = STATE.NULL;
 					}
 				}
-					
+				
+				else if(update.message().text().equals("/buscar_bem_por_codigo")) {
+
+					bot.execute(new SendMessage(update.message().chat().id(),
+						"Digite o codigo do bem que deseja buscar: "));
+					status = STATE.WAITING_GOOD_BY_CODE;		
+				}
+
+				else if(update.message().text().equals("/buscar_bem_por_nome")) {
+
+					bot.execute(new SendMessage(update.message().chat().id(),
+						"Digite o nome do bem que deseja buscar: "));
+					status = STATE.WAITING_GOOD_BY_NAME;
+				}
+
+				else if(update.message().text().equals("/buscar_bem_por_descricao")) {
+
+					bot.execute(new SendMessage(update.message().chat().id(),
+						"Digite o descricao do bem que deseja buscar: "));
+					status = STATE.WAITING_GOOD_BY_DESCRIPTION;
+				}
+				
 				else if(update.message().text().equals("/listar_localizacoes")  || status == STATE.LIST_LOCATIONS) {		
 					
 					try {
@@ -128,14 +149,14 @@ public class Main {
 						ArrayList <Location> locationList = controllLocations.list();
 						for (Location local: locationList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
-									"LocalizaÁ„o: " + local.getLocationName() + 
-									"\n| DescriÁ„o: " + local.getLocationDescription()));
+									"Localiza√ß√£o: " + local.getLocationName() + 
+									"\n| Descri√ß√£o: " + local.getLocationDescription()));
 							}
 					} catch (EmptyList e) {
 						bot.execute(new SendMessage(update.message().chat().id(), e.getMessage()));
 						
 						if(status == STATE.LIST_LOCATIONS) {
-							bot.execute(new SendMessage(update.message().chat().id(), "Por favor, cadastre uma localizaÁ„o antes "
+							bot.execute(new SendMessage(update.message().chat().id(), "Por favor, cadastre uma localiza√ß√£o antes "
 									+ "de tentar cadastrar um bem."));
 						}
 
@@ -145,7 +166,7 @@ public class Main {
 					if(status == STATE.LIST_LOCATIONS){
 							
 						bot.execute(new SendMessage(update.message().chat().id(), 
-								"Digite o nome da localizaÁ„o que est· associada ao bem que vocÍ deseja cadastrar:"));
+								"Digite o nome da localiza√ß√£o que est√° associada ao bem que voc√™ deseja cadastrar:"));
 						status = STATE.WAITING_LOCATION;
 					} else {
 						status = STATE.NULL;
@@ -160,8 +181,8 @@ public class Main {
 						for (Category gCategory: categoriesList){
 							bot.execute(new SendMessage(update.message().chat().id(), 
 									"Categoria: " + gCategory.getCategoryName() + 
-									"\n| DescriÁ„o: " +	gCategory.getCategoryDescription() +
-									"\n| CÛdigo: " + gCategory.getCategoryCode()));
+									"\n| Descri√ß√£o: " +	gCategory.getCategoryDescription() +
+									"\n| C√≥digo: " + gCategory.getCategoryCode()));
 							}
 					} catch (EmptyList e) {
 						bot.execute(new SendMessage(update.message().chat().id(), e.getMessage()));
@@ -177,8 +198,8 @@ public class Main {
 					if(status == STATE.LIST_CATEGORIES){
 							
 						bot.execute(new SendMessage(update.message().chat().id(), 
-								"Digite o nome da categoria que est· associada ao bem que "
-								+ "vocÍ deseja cadastrar:"));
+								"Digite o nome da categoria que est√° associada ao bem que "
+								+ "voc√™ deseja cadastrar:"));
 						status = STATE.WAITING_CATEGORY;
 					} else {
 						status = STATE.NULL;
@@ -187,12 +208,12 @@ public class Main {
 				
 				
 				/*
-				 * Aqui comeÁam os STATES utilizados para registrar um novo bem
+				 * Aqui come√ßam os STATES utilizados para registrar um novo bem
 				 * */		
 				else if(status == STATE.WAITING_GOOD_NAME) {
 					name = update.message().text();
 					bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite a descriÁ„o do bem: "));
+							"Digite a descri√ß√£o do bem: "));
 					
 					status = STATE.WAITING_GOOD_DESCRIPTION;
 					
@@ -200,7 +221,7 @@ public class Main {
 					
 					description = update.message().text();
 					bot.execute(new SendMessage(update.message().chat().id(),
-						"Digite o cÛdigo do bem:"));
+						"Digite o c√≥digo do bem:"));
 				
 					status = STATE.WAITING_GOOD_CODE;
 					
@@ -208,7 +229,7 @@ public class Main {
 					
 					code = update.message().text();
 					bot.execute(new SendMessage(update.message().chat().id(),
-							"Aperte qualquer tecla para listar as localizaÁÙes"));	
+							"Aperte qualquer tecla para listar as localiza√ß√¥es"));	
 						
 					status = STATE.LIST_LOCATIONS;
 					
@@ -230,7 +251,7 @@ public class Main {
 								e.getMessage()));
 						
 						bot.execute(new SendMessage(update.message().chat().id(),
-								"Aperte qualquer tecla para listar as localizaÁÙes"));
+								"Aperte qualquer tecla para listar as localiza√ß√¥es"));
 						
 						status = STATE.LIST_LOCATIONS;
 					}
@@ -255,16 +276,77 @@ public class Main {
 						
 						status = STATE.LIST_CATEGORIES;
 					}
+				} else if (status = STATE.WAITING_GOOD_BY_CODE) {
+
+					code = update.message().text();
+
+					try{
+						controllGoods.findByName(code);
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar a localizacao")); 
+
+						status = STATE.LIST_LOCATIONS;
+					} catch (OffTheList e) {
+
+						bot.execute(new SendMessage(update.message().chat().id(),
+								e.getMessage()));
+
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar as localiza√ß√¥es"));
+
+						status = STATE.LIST_LOCATIONS;
+					}
 				}
-					
+
+				else if (status = STATE.WAITING_GOOD_BY_NAME) {
+
+					name = update.message().text();
+
+					try{
+						controllGoods.findByName(name);
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar a localizacao")); 
+
+						status = STATE.LIST_LOCATIONS;
+					} catch (OffTheList e) {
+
+						bot.execute(new SendMessage(update.message().chat().id(),
+								e.getMessage()));
+
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar as localiza√ß√¥es"));
+
+						status = STATE.LIST_LOCATIONS;
+					}
+				} else if (status = STATE.WAITING_GOOD_BY_DESCRIPTION) {
+
+					descricao = update.message().text();
+
+					try{
+						controllGoods.findByName(descricao);
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar a localizacao")); 
+
+						status = STATE.LIST_LOCATIONS;
+					} catch (OffTheList e) {
+
+						bot.execute(new SendMessage(update.message().chat().id(),
+								e.getMessage()));
+
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar as localiza√ß√¥es"));
+
+						status = STATE.LIST_LOCATIONS;
+					}
+				}	
 				
 				/*
-				 * Aqui comeÁam os STATES utilizados para registrar uma nova localizaÁ„o
+				 * Aqui come√ßam os STATES utilizados para registrar uma nova localiza√ß√£o
 				 * */
 				else if(status == STATE.WAITING_LOCAL_NAME) {
 					name = update.message().text();
 					bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite a descriÁ„o do local: "));
+							"Digite a descri√ß√£o do local: "));
 						
 					status = STATE.WAITING_LOCAL_DESCRIPTION;
 						
@@ -281,12 +363,12 @@ public class Main {
 				
 				
 				/*
-				 * Aqui comeÁam os STATES utilizados para registrar uma nova categoria
+				 * Aqui come√ßam os STATES utilizados para registrar uma nova categoria
 				 * */	
 				else if(status == STATE.WAITING_CATEGORY_NAME) {
 					name = update.message().text();
 					bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite a descriÁ„o da categoria: "));
+							"Digite a descri√ß√£o da categoria: "));
 					
 					status = STATE.WAITING_CATEGORY_DESCRIPTION;
 						
@@ -294,7 +376,7 @@ public class Main {
 						
 					description = update.message().text();
 					bot.execute(new SendMessage(update.message().chat().id(),
-							"Digite o cÛdigo da categoria:"));
+							"Digite o c√≥digo da categoria:"));
 						
 					status = STATE.WAITING_CATEGORY_CODE;
 						
