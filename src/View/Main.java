@@ -38,6 +38,8 @@ public class Main {
 		String code = "null";
 		String location = "null";
 		String category = "null";
+		
+		boolean search = false;
 
 		//Criação do objeto bot com as informações de acesso
 		TelegramBot bot = TelegramBotAdapter.build("909350681:AAHgxlxiLrG7oZtaC6EwyBUrPEbMjVILUCA");
@@ -62,6 +64,13 @@ public class Main {
 		Categories controllCategories = new Categories();
 		Locations controllLocations = new Locations();
 		
+		controllLocations.register("ufrn", "ufrn");
+		controllLocations.register("ifrn", "ifrn");
+		controllCategories.register("teste", "teste", "teste");
+		controllGoods.register("t1", "t1", "t1", "ifrn", "teste");
+		controllGoods.register("t2", "t2", "t2", "ifrn", "teste");
+		controllGoods.register("t3", "t3", "t3", "ufrn", "teste");
+		
 		/*
 		 * Loop infinito, pode ser alterado por algum timer de intervalo curto,
 		 * 				funciona para receber tudo o que acontece de interação bot-usuário
@@ -77,7 +86,7 @@ public class Main {
 			
 			List<Update> updates = updatesResponse.updates();
 		
-			/*
+			/**
 			 * Cada input do usuário através do bot resulta em uma ação, esse 
 			 * 		for funciona para analisar essas ações e realizar a ação
 			 * 		necessária.
@@ -87,21 +96,37 @@ public class Main {
 				//atualização do off-set
 				m = update.updateId()+1;
 				
+				
+				/**
+				 * Comando para cadastrar o BEM, move o STATE para onde se recebe o nome do bem
+				 * a ser cadastrado
+				 * */
 				if(update.message().text().equals("/cadastrar_bem")) {
 					bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome do bem: "));
 					status = STATE.WAITING_GOOD_NAME;
 				}
 					
+				/**
+				 * Comando para cadastrar LOCALIZAÇÃO, move o STATE para onde se recebe o nome da localização
+				 * */
 				else if(update.message().text().equals("/cadastrar_localizacao")) {
 					bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome da localização: "));
 					status = STATE.WAITING_LOCAL_NAME;
 				}
 					
+				
+				/**
+				 * Comando para cadastrar CATEGORIA, move o STATE para onde se recebe o nome da categoria
+				 * */
 				else if(update.message().text().equals("/cadastrar_categoria")) {
 					bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome da categoria: "));
 					status = STATE.WAITING_CATEGORY_NAME;
 				}
 						
+				/**
+				 * Comando para listar BENS, pode capturar a exceção EmptyList que é chamada
+				 * caso não existe nenhum bem cadastrado. 
+				 * */
 				else if(update.message().text().equals("/listar_bens")) {
 						
 					try {
@@ -123,7 +148,11 @@ public class Main {
 
 				
 				/**
-				 * States e verificações de listagem
+				 * Comando para listar LOCALIZAÇÕES, pode capturar a exceção EmptyList que é chamada
+				 * caso não existe nenhum bem cadastrado. 
+				 * É acessado tanto através do comando (/listar_localizacoes) como através do STATE,
+				 * pois pode ser rechamado ao longo do sistema, ser ser necessária interação 
+				 * direta com o usuário. 
 				 * */
 				else if(update.message().text().equals("/listar_localizacoes")  || status == STATE.LIST_LOCATIONS) {		
 					
@@ -137,25 +166,30 @@ public class Main {
 							}
 					} catch (EmptyList e) {
 						bot.execute(new SendMessage(update.message().chat().id(), e.getMessage()));
-						
 						if(status == STATE.LIST_LOCATIONS) {
 							bot.execute(new SendMessage(update.message().chat().id(), "Por favor, cadastre uma localização antes "
 									+ "de tentar cadastrar um bem."));
-						}
-
+						}	
 						status = STATE.NULL;
 					}
 	
 					if(status == STATE.LIST_LOCATIONS){
-							
 						bot.execute(new SendMessage(update.message().chat().id(), 
 								"Digite o nome da localização que está associada ao bem que você deseja cadastrar:"));
 						status = STATE.WAITING_LOCATION;
+
 					} else {
 						status = STATE.NULL;
 					}
 				}
 				
+				/**
+				 * Comando para listar CATEGORIAS, pode capturar a exceção EmptyList que é chamada
+				 * caso não existe nenhum bem cadastrado. 
+				 * É acessado tanto através do comando (/listar_categorias) como através do STATE,
+				 * pois pode ser rechamado ao longo do sistema, ser ser necessária interação 
+				 * direta com o usuário. 
+				 * */
 				else if(update.message().text().equals("/listar_categorias")  || status == STATE.LIST_CATEGORIES) {		
 					try {
 						
@@ -188,6 +222,14 @@ public class Main {
 						status = STATE.NULL;
 					}
 				}
+				
+				else if(update.message().text().equals("/listar_bens_por_localizacao")){
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Aperte qualquer tecla para listar as localizações"));
+					status = STATE.LIST_LOCATIONS;
+					search = true;
+				}
+				
 				
 				/**
 				 * States e verificações de comandos de busca 
@@ -240,17 +282,29 @@ public class Main {
 						
 					status = STATE.LIST_LOCATIONS;
 					
-				/*@TOFIX*/	
+				
+				/**
+				 * STATE utilizado para receber, no cadastro de BEM, qual a LOCALIZAÇÃO do bem que 
+				 * se deseja cadastrar. Verifica, através da função findByName, se essa localização em 
+				 * questão já existe. Se não existir, a exceção OffTheList é lançada. 
+				 * */	
 				} else if(status == STATE.WAITING_LOCATION) {
 						
 					location = update.message().text();		
 					
 					try{
 						controllLocations.findByName(location);
-						bot.execute(new SendMessage(update.message().chat().id(),
-								"Aperte qualquer tecla para listar as categorias")); 
-					
-						status = STATE.LIST_CATEGORIES;
+						
+						if(search) {
+							status = STATE.LIST_GOODS_BY_LOCATION;
+							bot.execute(new SendMessage(update.message().chat().id(),
+									"Busca completa!\n Aperte qualquer tecla ver o resultado.")); 
+						} else {
+							bot.execute(new SendMessage(update.message().chat().id(),
+									"Aperte qualquer tecla para listar as categorias")); 
+							status = STATE.LIST_CATEGORIES;
+						}
+
 						
 					} catch (OffTheList e) {
 						
@@ -263,7 +317,11 @@ public class Main {
 						status = STATE.LIST_LOCATIONS;
 					}
 
-					
+				/**
+				 * STATE utilizado para receber, no cadastro de BEM, qual a CATEGORIA do bem que 
+				 * se deseja cadastrar. Verifica, através da função findByName, se essa localização em 
+				 * questão já existe. Se não existir, a exceção OffTheList é lançada. 
+				 * */		
 				} else if(status == STATE.WAITING_CATEGORY) {
 					category = update.message().text();
 					
@@ -352,6 +410,23 @@ public class Main {
 					controllCategories.register(name, description, code);
 						
 					status = STATE.NULL;
+				}
+				
+				/**
+				 * STATE utilizado para listar bens por localização
+				 * */
+				else if(status == STATE.LIST_GOODS_BY_LOCATION) {
+					ArrayList <Good> goodsListByLocation = controllGoods.listByLocation(location);
+					for (Good goods : goodsListByLocation){
+						bot.execute(new SendMessage(update.message().chat().id(), 
+								"Nome: " + goods.getGoodsName() + 
+								"\n| Descrição: " + goods.getGoodsDescription() + 
+								"\n| Código: " + goods.getGoodsCode() + 
+								"\n| Localização: " + goods.getGoodsLocation() + 
+								"\n| Categoria: " + goods.getGoodsCategory() + "\n"));
+					}
+					
+					search = false;
 				}
 				
 				/**

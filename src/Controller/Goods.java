@@ -51,6 +51,17 @@ public class Goods extends Controller{
 		}
 	}
 	
+	public ArrayList<Good> listByLocation(String locationSearch){
+		ArrayList<Good> goodsByLocation = new ArrayList<Good>();
+		for (Good good: goods) {
+			if(good.getGoodsLocation().toLowerCase().equals(locationSearch.toLowerCase())) {
+				goodsByLocation.add(good);
+			}
+		}
+
+		return goodsByLocation;
+	}
+	
 	/*public void findByCode() {
 		
 	}*/
