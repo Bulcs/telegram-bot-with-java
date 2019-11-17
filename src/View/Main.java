@@ -527,7 +527,7 @@ public class Main {
 						bot.execute(new SendMessage(update.message().chat().id(),
 								"Nome: " + searchGood.getGoodsName() +
 								"\n|Localização atual: " + searchGood.getGoodsLocation() +
-								"Digite a nova localização: "));
+								"\n|Digite a nova localização: "));
 						status = STATE.WAITING_NEW_LOCATION;
 
 					} catch (OffTheList e) {
