@@ -16,7 +16,7 @@ public class Categories extends Controller {
 	
     /** Register a category.
      * @param categoryName The category's  name.
-     * @param categoryDescription The category’s description.
+     * @param categoryDescription The categoryï¿½s description.
      * @param categoryCode The category's code
      */
     public void register(String categoryName, String categoryDescription, String categoryCode){
@@ -33,17 +33,17 @@ public class Categories extends Controller {
 	@Override
 	public boolean findByName(String searchName) throws OffTheList{
 		for (Category category: categories) {
-			if(category.getCategoryName().equals(searchName)) {
+			if(category.getCategoryName().toLowerCase().equals(searchName.toLowerCase())) {
 				return true;
 			}
 		}
-		throw new OffTheList("Parece que a categoria que você buscou não existe, tente novamente.");
+		throw new OffTheList("A categoria que vocÃª buscou nÃ£o existe, tente novamente.");
 	}
 	
 	@Override
 	public void sizeOfList() throws EmptyList {
 		if(categories.size() == 0) {
-			throw new EmptyList("Não há nenhuma categoria cadastrada ainda!");
+			throw new EmptyList("NÃ£o hÃ¡ nenhuma categoria cadastrada ainda!");
 		}
 	}
 }

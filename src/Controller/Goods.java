@@ -3,6 +3,7 @@ package Controller;
 import java.util.ArrayList;
 
 import Exceptions.EmptyList;
+import Exceptions.OffTheList;
 import Model.Good;
 
 
@@ -17,7 +18,7 @@ public class Goods extends Controller{
      * @param nome The goods  name.
      * @param descricao The goods description.
      * @param code The goods code
-     * Precisa colocar a localizaÁ„o e a categoria junto do Bem (Goods.java)
+     * Precisa colocar a localiza√ß√£o e a categoria junto do Bem (Goods.java)
      */
     public void register(String nome, String descricao, String code, String location, String category){
         Good default_good = new Good(nome, descricao,code, location, category);
@@ -33,19 +34,25 @@ public class Goods extends Controller{
     }
 	
 	@Override
-	public boolean findByName(String searchName){
+	public boolean findByName(String searchName) throws OffTheList{
 		for (Good good: goods) {
-			if(good.getGoodsName().equals(searchName)) {
+			if(good.getGoodsName().toLowerCase().equals(searchName.toLowerCase())) {
 				return true;
 			}
-		} return false;
+		} 
+		
+		throw new OffTheList("N√£o h√° nenhum bem cadastrado com esse nome.");
 	}
 	
 	@Override
 	public void sizeOfList() throws EmptyList {
 		if(goods.size() == 0) {
-			throw new EmptyList("N„o h· nenhum bem cadastrado ainda!");
+			throw new EmptyList("N√£o h√° nenhum bem cadastrado ainda!");
 		}
 	}
+	
+	/*public void findByCode() {
+		
+	}*/
 
 }

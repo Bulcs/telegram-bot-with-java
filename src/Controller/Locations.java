@@ -14,7 +14,7 @@ public class Locations extends Controller{
 	
     /** Register a location.
      * @param locationName The location's  name.
-     * @param locationDescription The location’s description.
+     * @param locationDescription The locationï¿½s description.
      */
     public void register(String locationName, String locationDescription){
         Location default_location = new Location(locationName, locationDescription);
@@ -30,18 +30,18 @@ public class Locations extends Controller{
 	@Override
 	public boolean findByName(String searchName) throws OffTheList{
 		for (Location local: locations) {
-			if(local.getLocationName().equals(searchName)) {
+			if(local.getLocationName().toLowerCase().equals(searchName.toLowerCase())) {
 				return true;
 			}
 		} 
 
-		throw new OffTheList("Parece que a localização que você buscou não existe, tente novamente.");
+		throw new OffTheList("A localizaÃ§Ã£o que vocÃª buscou nÃ£o existe, tente novamente.");
 	}
 	
 	@Override
 	public void sizeOfList() throws EmptyList {
 		if(locations.size() == 0) {
-			throw new EmptyList("Não há nenhuma localização cadastrada ainda!");
+			throw new EmptyList("NÃ£o hÃ¡ nenhuma localizaÃ§Ã£o cadastrada ainda!");
 		}
 	}
 

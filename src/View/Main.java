@@ -120,28 +120,11 @@ public class Main {
 						status = STATE.NULL;
 					}
 				}
+
 				
-				else if(update.message().text().equals("/buscar_bem_por_codigo")) {
-
-					bot.execute(new SendMessage(update.message().chat().id(),
-						"Digite o codigo do bem que deseja buscar: "));
-					status = STATE.WAITING_GOOD_BY_CODE;		
-				}
-
-				else if(update.message().text().equals("/buscar_bem_por_nome")) {
-
-					bot.execute(new SendMessage(update.message().chat().id(),
-						"Digite o nome do bem que deseja buscar: "));
-					status = STATE.WAITING_GOOD_BY_NAME;
-				}
-
-				else if(update.message().text().equals("/buscar_bem_por_descricao")) {
-
-					bot.execute(new SendMessage(update.message().chat().id(),
-						"Digite o descricao do bem que deseja buscar: "));
-					status = STATE.WAITING_GOOD_BY_DESCRIPTION;
-				}
-				
+				/**
+				 * States e verificações de listagem
+				 * */
 				else if(update.message().text().equals("/listar_localizacoes")  || status == STATE.LIST_LOCATIONS) {		
 					
 					try {
@@ -206,8 +189,32 @@ public class Main {
 					}
 				}
 				
+				/**
+				 * States e verificações de comandos de busca 
+				 * */
+				else if(update.message().text().equals("/buscar_bem_por_codigo")) {
+
+					bot.execute(new SendMessage(update.message().chat().id(),
+						"Digite o codigo do bem que deseja buscar: "));
+					status = STATE.WAITING_GOOD_BY_CODE;		
+				}
+
+				else if(update.message().text().equals("/buscar_bem_por_nome")) {
+
+					bot.execute(new SendMessage(update.message().chat().id(),
+						"Digite o nome do bem que deseja buscar: "));
+					status = STATE.WAITING_GOOD_BY_NAME;
+				}
+
+				else if(update.message().text().equals("/buscar_bem_por_descricao")) {
+
+					bot.execute(new SendMessage(update.message().chat().id(),
+						"Digite o descricao do bem que deseja buscar: "));
+					status = STATE.WAITING_GOOD_BY_DESCRIPTION;
+				}
 				
-				/*
+				
+				/**
 				 * Aqui começam os STATES utilizados para registrar um novo bem
 				 * */		
 				else if(status == STATE.WAITING_GOOD_NAME) {
@@ -276,7 +283,81 @@ public class Main {
 						
 						status = STATE.LIST_CATEGORIES;
 					}
-				} else if (status = STATE.WAITING_GOOD_BY_CODE) {
+				} 
+				
+				/**
+				 * Aqui começam os STATES utilizados para registrar uma nova localização
+				 * */
+				else if(status == STATE.WAITING_LOCAL_NAME) {
+					name = update.message().text();
+					
+					try {
+						controllLocations.findByName(name);
+						bot.execute(new SendMessage(update.message().chat().id(), 
+								"Já existe uma localização cadastrada com esse nome, tente novamente."));
+						status = STATE.NULL;
+					} catch(OffTheList e) {
+						bot.execute(new SendMessage(update.message().chat().id(), 
+								"Digite a descrição do local: "));
+							
+						status = STATE.WAITING_LOCAL_DESCRIPTION;
+					}
+
+						
+				} else if (status == STATE.WAITING_LOCAL_DESCRIPTION) {
+			
+					description = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Cadastrado com sucesso!"));	
+						
+					controllLocations.register(name, description);
+					
+					status = STATE.NULL;
+				}
+				
+				
+				/***
+				 * Aqui começam os STATES utilizados para registrar uma nova categoria
+				 * */	
+				else if(status == STATE.WAITING_CATEGORY_NAME) {
+					name = update.message().text();
+					
+					try {
+						controllCategories.findByName(name);
+						bot.execute(new SendMessage(update.message().chat().id(), 
+								"Já existe uma categoria cadastrada com esse nome, tente novamente."));
+						status = STATE.NULL;
+					} catch(OffTheList e) {
+						bot.execute(new SendMessage(update.message().chat().id(), 
+								"Digite a descrição da categoria: "));
+							
+						status = STATE.WAITING_CATEGORY_DESCRIPTION;
+					}
+
+						
+				} else if (status == STATE.WAITING_CATEGORY_DESCRIPTION) {
+						
+					description = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Digite o código da categoria:"));
+						
+					status = STATE.WAITING_CATEGORY_CODE;
+						
+				} else if(status == STATE.WAITING_CATEGORY_CODE) {
+						
+					code = update.message().text();
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Cadastrado com sucesso!"));	
+					
+					controllCategories.register(name, description, code);
+						
+					status = STATE.NULL;
+				}
+				
+				/**
+				 * Aqui começam os STATES de busca
+				 * */
+				else if (status == STATE.WAITING_GOOD_BY_CODE) {
 
 					code = update.message().text();
 
@@ -298,7 +379,7 @@ public class Main {
 					}
 				}
 
-				else if (status = STATE.WAITING_GOOD_BY_NAME) {
+				else if (status == STATE.WAITING_GOOD_BY_NAME) {
 
 					name = update.message().text();
 
@@ -318,12 +399,12 @@ public class Main {
 
 						status = STATE.LIST_LOCATIONS;
 					}
-				} else if (status = STATE.WAITING_GOOD_BY_DESCRIPTION) {
+				} else if (status == STATE.WAITING_GOOD_BY_DESCRIPTION) {
 
-					descricao = update.message().text();
+					description = update.message().text();
 
 					try{
-						controllGoods.findByName(descricao);
+						controllGoods.findByName(description);
 						bot.execute(new SendMessage(update.message().chat().id(),
 								"Aperte qualquer tecla para listar a localizacao")); 
 
@@ -339,57 +420,6 @@ public class Main {
 						status = STATE.LIST_LOCATIONS;
 					}
 				}	
-				
-				/*
-				 * Aqui começam os STATES utilizados para registrar uma nova localização
-				 * */
-				else if(status == STATE.WAITING_LOCAL_NAME) {
-					name = update.message().text();
-					bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite a descrição do local: "));
-						
-					status = STATE.WAITING_LOCAL_DESCRIPTION;
-						
-				} else if (status == STATE.WAITING_LOCAL_DESCRIPTION) {
-						
-					description = update.message().text();
-					bot.execute(new SendMessage(update.message().chat().id(),
-							"Cadastrado com sucesso!"));	
-						
-					controllLocations.register(name, description);
-					
-					status = STATE.NULL;
-				}
-				
-				
-				/*
-				 * Aqui começam os STATES utilizados para registrar uma nova categoria
-				 * */	
-				else if(status == STATE.WAITING_CATEGORY_NAME) {
-					name = update.message().text();
-					bot.execute(new SendMessage(update.message().chat().id(), 
-							"Digite a descrição da categoria: "));
-					
-					status = STATE.WAITING_CATEGORY_DESCRIPTION;
-						
-				} else if (status == STATE.WAITING_CATEGORY_DESCRIPTION) {
-						
-					description = update.message().text();
-					bot.execute(new SendMessage(update.message().chat().id(),
-							"Digite o código da categoria:"));
-						
-					status = STATE.WAITING_CATEGORY_CODE;
-						
-				} else if(status == STATE.WAITING_CATEGORY_CODE) {
-						
-					code = update.message().text();
-					bot.execute(new SendMessage(update.message().chat().id(),
-							"Cadastrado com sucesso!"));	
-					
-					controllCategories.register(name, description, code);
-						
-					status = STATE.NULL;
-				}
 			}
 		}
 	}
