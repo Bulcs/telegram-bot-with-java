@@ -506,7 +506,47 @@ public class Main {
 					}
 					
 					status = STATE.NULL;
-				}	
+				}
+				
+				/**
+				* Busca um bem pelo código e troca sua localização
+				* */
+				else if(update.message().text().equals("/trocar_localizacao_de_bem")) {
+
+					bot.execute(new SendMessage(update.message().chat().id(),
+						"Digite o codigo do bem que deseja buscar: "));
+					status = STATE.WAITING_GOOD_BY_CODE_FOR_EXCHANCE;
+				}
+
+				else if (status == STATE.WAITING_GOOD_BY_CODE_FOR_EXCHANCE) {
+
+					code = update.message().text();
+
+					try{
+						Good searchGood = controllGoods.findByCode(code);
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Nome: " + searchGood.getGoodsName() +
+								"\n|Localização atual: " + searchGood.getGoodsLocation() +
+								"Digite a nova localização: "));
+						status = STATE.WAITING_NEW_LOCATION;
+
+					} catch (OffTheList e) {
+
+						bot.execute(new SendMessage(update.message().chat().id(),
+								e.getMessage()));
+					}
+					
+					status = STATE.NULL;
+				}
+
+				else if (status == STATE.WAITING_NEW_LOCATION) {
+
+					location = update.message().text();
+
+					bot.execute(new SendMessage(update.message().chat().id(),"Localização do bem foi atualizado com sucesso!")); 
+					controllGoods.register(name, description, code, location, category);
+					status = STATE.NULL;
+				}
 			}
 		}
 	}
