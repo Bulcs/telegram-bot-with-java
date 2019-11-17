@@ -38,7 +38,7 @@ public class Main {
 		String code = "null";
 		String location = "null";
 		String category = "null";
-		
+		Good searchGood = null;
 		boolean search = false;
 
 		//Criação do objeto bot com as informações de acesso
@@ -449,7 +449,7 @@ public class Main {
 					code = update.message().text();
 
 					try{
-						Good searchGood = controllGoods.findByCode(code);
+						searchGood = controllGoods.findByCode(code);
 						bot.execute(new SendMessage(update.message().chat().id(),
 								"Nome: " + searchGood.getGoodsName() +
 								"\n|Localização: " + searchGood.getGoodsLocation())); 
@@ -519,11 +519,11 @@ public class Main {
 				}
 
 				else if (status == STATE.WAITING_GOOD_BY_CODE_FOR_EXCHANCE) {
-
+					
 					code = update.message().text();
-
+				
 					try{
-						Good searchGood = controllGoods.findByCode(code);
+						searchGood = controllGoods.findByCode(code);
 						bot.execute(new SendMessage(update.message().chat().id(),
 								"Nome: " + searchGood.getGoodsName() +
 								"\n|Localização atual: " + searchGood.getGoodsLocation() +
@@ -536,14 +536,20 @@ public class Main {
 								e.getMessage()));
 					}
 					
-					status = STATE.NULL;
 				}
 
 				else if (status == STATE.WAITING_NEW_LOCATION) {
-
+					
 					location = update.message().text();
-
+					name = searchGood.getGoodsName();
+					description = searchGood.getGoodsDescription();
+					code = searchGood.getGoodsCode();
+					category = searchGood.getGoodsCategory();
+					
+					controllGoods.deleteByCode(code);
+					
 					bot.execute(new SendMessage(update.message().chat().id(),"Localização do bem foi atualizado com sucesso!")); 
+					
 					controllGoods.register(name, description, code, location, category);
 					status = STATE.NULL;
 				}

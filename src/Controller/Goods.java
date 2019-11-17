@@ -98,6 +98,13 @@ public class Goods extends Controller{
 		
 		return goodsByDescription;
 	}
-
+	
+	public void deleteByCode(String code) {
+		for (Good good: goods) {
+			if(good.getGoodsCode().toLowerCase().equals(code.toLowerCase())) {
+				goods.remove(good);
+			}
+		} 
+	}
 
 }
