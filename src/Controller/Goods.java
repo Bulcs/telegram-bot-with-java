@@ -40,7 +40,6 @@ public class Goods extends Controller{
 				return true;
 			}
 		} 
-		
 		throw new OffTheList("Não há nenhum bem cadastrado com esse nome.");
 	}
 	
@@ -58,12 +57,47 @@ public class Goods extends Controller{
 				goodsByLocation.add(good);
 			}
 		}
-
 		return goodsByLocation;
 	}
 	
-	/*public void findByCode() {
+	public Good findByCode(String searchCode) throws OffTheList{
+		for (Good good: goods) {
+			if(good.getGoodsCode().toLowerCase().equals(searchCode.toLowerCase())) {
+				return good;
+			}
+		} 
+		throw new OffTheList("Não há nenhum bem cadastrado com esse código.");
+	}
+	
+	public ArrayList<Good> listByName(String nameSearch) throws EmptyList{
+		ArrayList<Good> goodsByName = new ArrayList<Good>();
+		for (Good good: goods) {
+			if(good.getGoodsName().toLowerCase().equals(nameSearch.toLowerCase())) {
+				goodsByName.add(good);
+			}
+		}
 		
-	}*/
+		if(goodsByName.size() == 0) {
+			throw new EmptyList("Não há nenhum bem cadastrado com esse nome");
+		}
+		
+		return goodsByName;
+	}
+	
+	public ArrayList<Good> listByDescription(String descriptionSearch) throws EmptyList{
+		ArrayList<Good> goodsByDescription = new ArrayList<Good>();
+		for (Good good: goods) {
+			if(good.getGoodsDescription().toLowerCase().equals(descriptionSearch.toLowerCase())) {
+				goodsByDescription.add(good);
+			}
+		}
+		
+		if(goodsByDescription.size() == 0) {
+			throw new EmptyList("Não há nenhum bem cadastrado com essa descrição");
+		}
+		
+		return goodsByDescription;
+	}
+
 
 }

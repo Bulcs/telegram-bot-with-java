@@ -71,7 +71,7 @@ public class Main {
 		controllGoods.register("t2", "t2", "t2", "ifrn", "teste");
 		controllGoods.register("t3", "t3", "t3", "ufrn", "teste");
 		
-		/*
+		/**
 		 * Loop infinito, pode ser alterado por algum timer de intervalo curto,
 		 * 				funciona para receber tudo o que acontece de interação bot-usuário
 		 * 
@@ -223,6 +223,11 @@ public class Main {
 					}
 				}
 				
+				/**
+				 * Comando para listar BENS de uma determinada LOCALIZAÇÃO.
+				 * Muda o STATE de modo a voltar para a lista de localizações cadastradas,
+				 * permitindo ao usuário escolher a localização que irá buscar.
+				 * */
 				else if(update.message().text().equals("/listar_bens_por_localizacao")){
 					bot.execute(new SendMessage(update.message().chat().id(),
 							"Aperte qualquer tecla para listar as localizações"));
@@ -277,12 +282,19 @@ public class Main {
 				} else if(status == STATE.WAITING_GOOD_CODE) {
 					
 					code = update.message().text();
-					bot.execute(new SendMessage(update.message().chat().id(),
-							"Aperte qualquer tecla para listar as localizaçôes"));	
-						
-					status = STATE.LIST_LOCATIONS;
 					
-				
+					try {
+						controllGoods.findByCode(code);
+						bot.execute(new SendMessage(update.message().chat().id(), 
+								"Já existe um bem cadastrado com esse codigo, tente novamente."));
+						status = STATE.NULL;
+					} catch(OffTheList e) {
+					
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar as localizaçôes"));			
+						status = STATE.LIST_LOCATIONS;
+					}
+					
 				/**
 				 * STATE utilizado para receber, no cadastro de BEM, qual a LOCALIZAÇÃO do bem que 
 				 * se deseja cadastrar. Verifica, através da função findByName, se essa localização em 
@@ -437,63 +449,63 @@ public class Main {
 					code = update.message().text();
 
 					try{
-						controllGoods.findByName(code);
+						Good searchGood = controllGoods.findByCode(code);
 						bot.execute(new SendMessage(update.message().chat().id(),
-								"Aperte qualquer tecla para listar a localizacao")); 
-
-						status = STATE.LIST_LOCATIONS;
+								"Nome: " + searchGood.getGoodsName() +
+								"\n|Localização: " + searchGood.getGoodsLocation())); 
 					} catch (OffTheList e) {
 
 						bot.execute(new SendMessage(update.message().chat().id(),
 								e.getMessage()));
-
-						bot.execute(new SendMessage(update.message().chat().id(),
-								"Aperte qualquer tecla para listar as localizaçôes"));
-
-						status = STATE.LIST_LOCATIONS;
 					}
+					
+					status = STATE.NULL;
 				}
 
 				else if (status == STATE.WAITING_GOOD_BY_NAME) {
 
 					name = update.message().text();
-
-					try{
-						controllGoods.findByName(name);
-						bot.execute(new SendMessage(update.message().chat().id(),
-								"Aperte qualquer tecla para listar a localizacao")); 
-
-						status = STATE.LIST_LOCATIONS;
-					} catch (OffTheList e) {
-
-						bot.execute(new SendMessage(update.message().chat().id(),
-								e.getMessage()));
-
-						bot.execute(new SendMessage(update.message().chat().id(),
-								"Aperte qualquer tecla para listar as localizaçôes"));
-
-						status = STATE.LIST_LOCATIONS;
+					
+					try {
+							
+						ArrayList <Good> goodsListByName = controllGoods.listByName(name);
+						for (Good goods : goodsListByName){
+							bot.execute(new SendMessage(update.message().chat().id(), 
+									"Nome: " + goods.getGoodsName() + 
+									"\n| Descrição: " + goods.getGoodsDescription() + 
+									"\n| Código: " + goods.getGoodsCode() + 
+									"\n| Localização: " + goods.getGoodsLocation() + 
+									"\n| Categoria: " + goods.getGoodsCategory() + "\n"));
+						}
+					} catch(EmptyList e) {
+						bot.execute(new SendMessage(update.message().chat().id(), e.getMessage()));
+	
 					}
+					
+					status = STATE.NULL;
+				
+				
 				} else if (status == STATE.WAITING_GOOD_BY_DESCRIPTION) {
 
 					description = update.message().text();
-
-					try{
-						controllGoods.findByName(description);
-						bot.execute(new SendMessage(update.message().chat().id(),
-								"Aperte qualquer tecla para listar a localizacao")); 
-
-						status = STATE.LIST_LOCATIONS;
-					} catch (OffTheList e) {
-
-						bot.execute(new SendMessage(update.message().chat().id(),
-								e.getMessage()));
-
-						bot.execute(new SendMessage(update.message().chat().id(),
-								"Aperte qualquer tecla para listar as localizaçôes"));
-
-						status = STATE.LIST_LOCATIONS;
+				
+					try {
+							
+						ArrayList <Good> goodsListByDescription = controllGoods.listByDescription(description);
+						for (Good goods : goodsListByDescription){
+							bot.execute(new SendMessage(update.message().chat().id(), 
+									"Nome: " + goods.getGoodsName() + 
+									"\n| Descrição: " + goods.getGoodsDescription() + 
+									"\n| Código: " + goods.getGoodsCode() + 
+									"\n| Localização: " + goods.getGoodsLocation() + 
+									"\n| Categoria: " + goods.getGoodsCategory() + "\n"));
+						}
+					} catch(EmptyList e) {
+						bot.execute(new SendMessage(update.message().chat().id(), e.getMessage()));
+	
 					}
+					
+					status = STATE.NULL;
 				}	
 			}
 		}
