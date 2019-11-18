@@ -1,19 +1,15 @@
 package View;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramBotAdapter;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.ChatAction;
 import com.pengrad.telegrambot.request.GetUpdates;
-import com.pengrad.telegrambot.request.SendChatAction;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.BaseResponse;
-import com.pengrad.telegrambot.response.GetChatResponse;
 import com.pengrad.telegrambot.response.GetUpdatesResponse;
-import com.pengrad.telegrambot.response.SendResponse;
+
 
 import Controller.Categories;
 import Controller.Goods;
@@ -40,7 +36,8 @@ public class Main {
 		String category = "null";
 		Good searchGood = null;
 		boolean search = false;
-
+		boolean change = false;
+		
 		//Criação do objeto bot com as informações de acesso
 		TelegramBot bot = TelegramBotAdapter.build("909350681:AAHgxlxiLrG7oZtaC6EwyBUrPEbMjVILUCA");
 
@@ -174,9 +171,10 @@ public class Main {
 					}
 	
 					if(status == STATE.LIST_LOCATIONS){
-						bot.execute(new SendMessage(update.message().chat().id(), 
-								"Digite o nome da localização que está associada ao bem que você deseja cadastrar:"));
 						status = STATE.WAITING_LOCATION;
+						bot.execute(new SendMessage(update.message().chat().id(), 
+								"Digite o nome da localização que está associada a esse bem:"));
+			
 
 					} else {
 						status = STATE.NULL;
@@ -311,6 +309,10 @@ public class Main {
 							status = STATE.LIST_GOODS_BY_LOCATION;
 							bot.execute(new SendMessage(update.message().chat().id(),
 									"Busca completa!\n Aperte qualquer tecla ver o resultado.")); 
+						} else if(change){
+							status = STATE.WAITING_NEW_LOCATION;
+							bot.execute(new SendMessage(update.message().chat().id(),
+									"Opa, tudo quase pronto! Aperte qualquer tecla para ver as mudanças.")); 
 						} else {
 							bot.execute(new SendMessage(update.message().chat().id(),
 									"Aperte qualquer tecla para listar as categorias")); 
@@ -526,21 +528,26 @@ public class Main {
 						searchGood = controllGoods.findByCode(code);
 						bot.execute(new SendMessage(update.message().chat().id(),
 								"Nome: " + searchGood.getGoodsName() +
-								"\n|Localização atual: " + searchGood.getGoodsLocation() +
-								"\n|Digite a nova localização: "));
-						status = STATE.WAITING_NEW_LOCATION;
+								"\n| Localização atual: " + searchGood.getGoodsLocation()));
+						
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar as localizações disponíveis para troca: "));
+
+						status = STATE.LIST_LOCATIONS;
+						change = true;
 
 					} catch (OffTheList e) {
 
 						bot.execute(new SendMessage(update.message().chat().id(),
 								e.getMessage()));
+						status = STATE.NULL;
+						
 					}
 					
 				}
 
 				else if (status == STATE.WAITING_NEW_LOCATION) {
-					
-					location = update.message().text();
+
 					name = searchGood.getGoodsName();
 					description = searchGood.getGoodsDescription();
 					code = searchGood.getGoodsCode();
@@ -548,7 +555,10 @@ public class Main {
 					
 					controllGoods.deleteByCode(code);
 					
-					bot.execute(new SendMessage(update.message().chat().id(),"Localização do bem foi atualizado com sucesso!")); 
+					bot.execute(new SendMessage(update.message().chat().id(),"Localização do bem foi atualizado com sucesso!"));
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Nome: " + searchGood.getGoodsName() +
+							"\n| Nova localização: " + location));
 					
 					controllGoods.register(name, description, code, location, category);
 					status = STATE.NULL;
