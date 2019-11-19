@@ -48,7 +48,11 @@ public class Main {
 		boolean search = false;
 		boolean change = false;
 		
+<<<<<<< HEAD
 		/** Creation of the bot object with access info*/
+=======
+		//Criação do objeto bot com as informações de acesso
+>>>>>>> 1f1ae8160b69f44883869f21228390734babe710
 		TelegramBot bot = TelegramBotAdapter.build("909350681:AAHgxlxiLrG7oZtaC6EwyBUrPEbMjVILUCA");
 
 		/**
