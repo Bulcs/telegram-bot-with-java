@@ -1,5 +1,7 @@
 package View;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -565,6 +567,82 @@ public class Main {
 					
 					controllGoods.register(name, description, code, location, category);
 					status = STATE.NULL;
+				}
+				
+			
+				/**
+				* Create a report
+				* */
+				else if (update.message().text().equals("/gerar_relatorio")) {
+					try {
+						controllGoods.sizeOfList();
+						ArrayList <Good> goodsList = controllGoods.list();
+						
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"BENS ORDENADOS POR LOCALIZAÇÃO: "));
+							
+						Collections.sort(goodsList,new Comparator(){
+							public int compare(Object o1, Object o2) {
+						        Good a1 = (Good)o1;
+						        Good a2 = (Good)o2;
+						        return a1.getGoodsLocation()
+						                .compareToIgnoreCase(a2.getGoodsLocation());
+						    }
+						});
+						
+						for (Good goods : goodsList){
+							bot.execute(new SendMessage(update.message().chat().id(), 
+									"Nome: " + goods.getGoodsName() + 
+									"\n| Descrição: " + goods.getGoodsDescription() + 
+									"\n| Código: " + goods.getGoodsCode() + 
+									"\n| Localização: " + goods.getGoodsLocation() + 
+									"\n| Categoria: " + goods.getGoodsCategory() + "\n"));
+						}
+						
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"BENS ORDENADOS POR CATEGORIA: "));
+							
+						Collections.sort(goodsList,new Comparator(){
+							public int compare(Object o1, Object o2) {
+						        Good a1 = (Good)o1;
+						        Good a2 = (Good)o2;
+						        return a1.getGoodsCategory()
+						                .compareToIgnoreCase(a2.getGoodsCategory());
+						    }
+						});
+						
+						for (Good goods : goodsList){
+							bot.execute(new SendMessage(update.message().chat().id(), 
+									"Nome: " + goods.getGoodsName() + 
+									"\n| Descrição: " + goods.getGoodsDescription() + 
+									"\n| Código: " + goods.getGoodsCode() + 
+									"\n| Localização: " + goods.getGoodsLocation() + 
+									"\n| Categoria: " + goods.getGoodsCategory() + "\n"));
+						}
+						
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"BENS ORDEM ALFABÉTICA: "));
+						
+						Collections.sort(goodsList,new Comparator(){
+							public int compare(Object o1, Object o2) {
+						        Good a1 = (Good)o1;
+						        Good a2 = (Good)o2;
+						        return a1.getGoodsName()
+						                .compareToIgnoreCase(a2.getGoodsName());
+						    }
+						});
+						for (Good goods : goodsList){
+							bot.execute(new SendMessage(update.message().chat().id(), 
+									"Nome: " + goods.getGoodsName() + 
+									"\n| Descrição: " + goods.getGoodsDescription() + 
+									"\n| Código: " + goods.getGoodsCode() + 
+									"\n| Localização: " + goods.getGoodsLocation() + 
+									"\n| Categoria: " + goods.getGoodsCategory() + "\n"));
+						}
+					} catch (EmptyList e) {
+						bot.execute(new SendMessage(update.message().chat().id(), e.getMessage()));
+						status = STATE.NULL;
+					}
 				}
 			}
 		}
