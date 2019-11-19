@@ -7,7 +7,9 @@ import Exceptions.OffTheList;
 import Model.Category;
 
 public class Categories extends Controller {
-
+	/** ArrayList creation
+	 *  @param categories the arrayList that we gonna use on categories
+	 */
 	ArrayList<Category> categories;
 	
 	public Categories() {
@@ -16,7 +18,7 @@ public class Categories extends Controller {
 	
     /** Register a category.
      * @param categoryName The category's  name.
-     * @param categoryDescription The category�s description.
+     * @param categoryDescription The category's description.
      * @param categoryCode The category's code
      */
     public void register(String categoryName, String categoryDescription, String categoryCode){
@@ -25,11 +27,18 @@ public class Categories extends Controller {
     }
 	
     /** Lists all CATEGORIES running through arraylist categories */
+    
+    /** list the categories method
+     * @return all the categories added 
+     * */
 	@Override
     public ArrayList<Category> list(){
     	return categories;
     }
-
+	/** This method search a category by name
+	 * @param searchName String - user searched name
+	 * @return true - if the category searched exist or return a warning saying the category don't exist
+	 * */
 	@Override
 	public boolean findByName(String searchName) throws OffTheList{
 		for (Category category: categories) {
@@ -39,7 +48,9 @@ public class Categories extends Controller {
 		}
 		throw new OffTheList("A categoria que você buscou não existe, tente novamente.");
 	}
-	
+	/** This method verify if the arrayList of category is empty
+	 * throw for an exception
+	 * */
 	@Override
 	public void sizeOfList() throws EmptyList {
 		if(categories.size() == 0) {

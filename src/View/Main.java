@@ -1,19 +1,15 @@
 package View;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramBotAdapter;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.ChatAction;
 import com.pengrad.telegrambot.request.GetUpdates;
-import com.pengrad.telegrambot.request.SendChatAction;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.BaseResponse;
-import com.pengrad.telegrambot.response.GetChatResponse;
 import com.pengrad.telegrambot.response.GetUpdatesResponse;
-import com.pengrad.telegrambot.response.SendResponse;
+
 
 import Controller.Categories;
 import Controller.Goods;
@@ -28,10 +24,18 @@ import Model.STATE;
 public class Main {
 	public static void main(String[] args) {
 		
-		/*
-		 *Declaração de variáveis que serão utilizadas para receber os valores
-		 *que o usuário digita.
-		 * */
+		/**
+		 * @author Carmem, Rafaela, Vinícius
+	     * @param status state machine equal NULL
+	     * @param name equal "null"
+	     * @param description equal "null"
+	     * @param code equal "null"
+	     * @param location equal "null"
+	     * @param category equal "null"
+	     * @param searchGood equal null
+	     * @param search equal false
+	     * @param change equal false
+	     */
 		STATE status = STATE.NULL;
 		String name = "null";
 		String description = "null";
@@ -40,30 +44,26 @@ public class Main {
 		String category = "null";
 		Good searchGood = null;
 		boolean search = false;
-
-		//Criação do objeto bot com as informações de acesso
+		boolean change = false;
+		
+		/** Creation of the bot object with access info*/
 		TelegramBot bot = TelegramBotAdapter.build("909350681:AAHgxlxiLrG7oZtaC6EwyBUrPEbMjVILUCA");
 
-		/*
-		 * GetUpdatesResponse: objeto responsável por receber as mensagens
-		 * SendResponse: objeto responsável por gerenciar o envio de respostas
-		 * BaseResponse: responsável por gerenciar o envio de ações do chat
-		 * */
+		/**
+		 * GetUpdatesResponse: object who will receive the message
+		 */
 		GetUpdatesResponse updatesResponse;
-		//SendResponse sendResponse:
-		//BaseResponse baseResponse;
 		
-		
-		//controle de off-set, isto é, a partir deste ID serão lido as mensagens pendentes na fila
+		/** off-set control */
 		int m = 0;
 		
-		/*
+		/**
 		 * Controladores para cada uma das classes
-		 * */
+		 */
 		Goods controllGoods = new Goods();
 		Categories controllCategories = new Categories();
 		Locations controllLocations = new Locations();
-		
+		/** Creating some locations, categories and goods */
 		controllLocations.register("ufrn", "ufrn");
 		controllLocations.register("ifrn", "ifrn");
 		controllCategories.register("teste", "teste", "teste");
@@ -72,13 +72,13 @@ public class Main {
 		controllGoods.register("t3", "t3", "t3", "ufrn", "teste");
 		
 		/**
-		 * Loop infinito, pode ser alterado por algum timer de intervalo curto,
-		 * 				funciona para receber tudo o que acontece de interação bot-usuário
-		 * 
-		 * updatesResponse: executa comando no Telegram para obter as mensagens
-		 * 				pendentes a partir de um off-set (limite inicial)
-		 * 
-		 * updates: lista de mensagens/updates do usuário
+		 * Infinite loop, can be changed by some short interval timer,
+		 * works to receive everything that happens from bot-user interaction
+		 *
+		 * updatesResponse: run Telegram command to get messages
+		 * pending from an off-set (initial limit)
+		 *
+		 * updates: list of messages / user updates
 		 */
 		while (true){
 
@@ -87,9 +87,9 @@ public class Main {
 			List<Update> updates = updatesResponse.updates();
 		
 			/**
-			 * Cada input do usuário através do bot resulta em uma ação, esse 
-			 * 		for funciona para analisar essas ações e realizar a ação
-			 * 		necessária.
+			 * Each user input through the bot results in an action, this
+			 * for works to analyze these actions and perform the action
+			 * required.
 			 */
 			for (Update update : updates) {
 				
@@ -98,8 +98,8 @@ public class Main {
 				
 				
 				/**
-				 * Comando para cadastrar o BEM, move o STATE para onde se recebe o nome do bem
-				 * a ser cadastrado
+				 * Command to register BEM, moves STATE to where the name of the property is received
+				 * to be registered
 				 * */
 				if(update.message().text().equals("/cadastrar_bem")) {
 					bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome do bem: "));
@@ -107,7 +107,7 @@ public class Main {
 				}
 					
 				/**
-				 * Comando para cadastrar LOCALIZAÇÃO, move o STATE para onde se recebe o nome da localização
+				 * Command to register LOCATION, moves STATE to the location name
 				 * */
 				else if(update.message().text().equals("/cadastrar_localizacao")) {
 					bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome da localização: "));
@@ -116,7 +116,7 @@ public class Main {
 					
 				
 				/**
-				 * Comando para cadastrar CATEGORIA, move o STATE para onde se recebe o nome da categoria
+				 * Command to register CATEGORY, moves STATE to where the category name is received
 				 * */
 				else if(update.message().text().equals("/cadastrar_categoria")) {
 					bot.execute(new SendMessage(update.message().chat().id(),"Digite o nome da categoria: "));
@@ -124,8 +124,8 @@ public class Main {
 				}
 						
 				/**
-				 * Comando para listar BENS, pode capturar a exceção EmptyList que é chamada
-				 * caso não existe nenhum bem cadastrado. 
+				 * Command to list GOOD can catch EmptyList exception that is called
+				 * if there is no registered property.
 				 * */
 				else if(update.message().text().equals("/listar_bens")) {
 						
@@ -148,11 +148,10 @@ public class Main {
 
 				
 				/**
-				 * Comando para listar LOCALIZAÇÕES, pode capturar a exceção EmptyList que é chamada
-				 * caso não existe nenhum bem cadastrado. 
-				 * É acessado tanto através do comando (/listar_localizacoes) como através do STATE,
-				 * pois pode ser rechamado ao longo do sistema, ser ser necessária interação 
-				 * direta com o usuário. 
+				 * Command to list LOCATIONS, can catch the EmptyList exception that 
+				 * is called if there are no registered properties. Accessed through 
+				 * both the command (/ list_locations) and STATE, as it can be recalled 
+				 * throughout the system, requiring direct user interaction.
 				 * */
 				else if(update.message().text().equals("/listar_localizacoes")  || status == STATE.LIST_LOCATIONS) {		
 					
@@ -174,9 +173,10 @@ public class Main {
 					}
 	
 					if(status == STATE.LIST_LOCATIONS){
-						bot.execute(new SendMessage(update.message().chat().id(), 
-								"Digite o nome da localização que está associada ao bem que você deseja cadastrar:"));
 						status = STATE.WAITING_LOCATION;
+						bot.execute(new SendMessage(update.message().chat().id(), 
+								"Digite o nome da localização que está associada a esse bem:"));
+			
 
 					} else {
 						status = STATE.NULL;
@@ -184,11 +184,10 @@ public class Main {
 				}
 				
 				/**
-				 * Comando para listar CATEGORIAS, pode capturar a exceção EmptyList que é chamada
-				 * caso não existe nenhum bem cadastrado. 
-				 * É acessado tanto através do comando (/listar_categorias) como através do STATE,
-				 * pois pode ser rechamado ao longo do sistema, ser ser necessária interação 
-				 * direta com o usuário. 
+				 * Command to list CATEGORIES, can catch the EmptyList exception
+				 * that is called so there is no registered good. It is accessed 
+				 * through both the command (/ list_categories) and through STATE, as 
+				 * it can be recalled throughout the system, requiring direct user interaction.
 				 * */
 				else if(update.message().text().equals("/listar_categorias")  || status == STATE.LIST_CATEGORIES) {		
 					try {
@@ -224,9 +223,9 @@ public class Main {
 				}
 				
 				/**
-				 * Comando para listar BENS de uma determinada LOCALIZAÇÃO.
-				 * Muda o STATE de modo a voltar para a lista de localizações cadastradas,
-				 * permitindo ao usuário escolher a localização que irá buscar.
+				 * Command to list GOODS of a given LOCATION. Changes STATE 
+				 * to return to the list of registered locations, allowing the 
+				 * user to choose the location to search.
 				 * */
 				else if(update.message().text().equals("/listar_bens_por_localizacao")){
 					bot.execute(new SendMessage(update.message().chat().id(),
@@ -237,7 +236,7 @@ public class Main {
 				
 				
 				/**
-				 * States e verificações de comandos de busca 
+				 * States and search commands verification 
 				 * */
 				else if(update.message().text().equals("/buscar_bem_por_codigo")) {
 
@@ -262,7 +261,7 @@ public class Main {
 				
 				
 				/**
-				 * Aqui começam os STATES utilizados para registrar um novo bem
+				 * Here begins the STATES used to register a new asset.
 				 * */		
 				else if(status == STATE.WAITING_GOOD_NAME) {
 					name = update.message().text();
@@ -296,9 +295,10 @@ public class Main {
 					}
 					
 				/**
-				 * STATE utilizado para receber, no cadastro de BEM, qual a LOCALIZAÇÃO do bem que 
-				 * se deseja cadastrar. Verifica, através da função findByName, se essa localização em 
-				 * questão já existe. Se não existir, a exceção OffTheList é lançada. 
+				 * STATE used to receive, in the register of WELL, which is the 
+				 * LOCATION of the good that you want to register. Checks with the 
+				 * findByName function whether this location already exists. If it does not exist, 
+				 * the OffTheList exception is thrown.
 				 * */	
 				} else if(status == STATE.WAITING_LOCATION) {
 						
@@ -311,6 +311,10 @@ public class Main {
 							status = STATE.LIST_GOODS_BY_LOCATION;
 							bot.execute(new SendMessage(update.message().chat().id(),
 									"Busca completa!\n Aperte qualquer tecla ver o resultado.")); 
+						} else if(change){
+							status = STATE.WAITING_NEW_LOCATION;
+							bot.execute(new SendMessage(update.message().chat().id(),
+									"Opa, tudo quase pronto! Aperte qualquer tecla para ver as mudanças.")); 
 						} else {
 							bot.execute(new SendMessage(update.message().chat().id(),
 									"Aperte qualquer tecla para listar as categorias")); 
@@ -330,9 +334,10 @@ public class Main {
 					}
 
 				/**
-				 * STATE utilizado para receber, no cadastro de BEM, qual a CATEGORIA do bem que 
-				 * se deseja cadastrar. Verifica, através da função findByName, se essa localização em 
-				 * questão já existe. Se não existir, a exceção OffTheList é lançada. 
+				 * STATE used to receive, in the register of WELL, which 
+				 * CATEGORY of the good to be registered. Checks with the 
+				 * findByName function whether this location already exists. 
+				 * If it does not exist, the OffTheList exception is thrown. 
 				 * */		
 				} else if(status == STATE.WAITING_CATEGORY) {
 					category = update.message().text();
@@ -356,7 +361,7 @@ public class Main {
 				} 
 				
 				/**
-				 * Aqui começam os STATES utilizados para registrar uma nova localização
+				 * Here begins the STATES used to register a new location.
 				 * */
 				else if(status == STATE.WAITING_LOCAL_NAME) {
 					name = update.message().text();
@@ -387,7 +392,7 @@ public class Main {
 				
 				
 				/***
-				 * Aqui começam os STATES utilizados para registrar uma nova categoria
+				 * Here begins the STATES used to register a new category.
 				 * */	
 				else if(status == STATE.WAITING_CATEGORY_NAME) {
 					name = update.message().text();
@@ -425,7 +430,7 @@ public class Main {
 				}
 				
 				/**
-				 * STATE utilizado para listar bens por localização
+				 * STATE used to list assets by location
 				 * */
 				else if(status == STATE.LIST_GOODS_BY_LOCATION) {
 					ArrayList <Good> goodsListByLocation = controllGoods.listByLocation(location);
@@ -442,7 +447,7 @@ public class Main {
 				}
 				
 				/**
-				 * Aqui começam os STATES de busca
+				 * Here begins the search STATES
 				 * */
 				else if (status == STATE.WAITING_GOOD_BY_CODE) {
 
@@ -509,7 +514,7 @@ public class Main {
 				}
 				
 				/**
-				* Busca um bem pelo código e troca sua localização
+				* Search for a good by code and change its location
 				* */
 				else if(update.message().text().equals("/trocar_localizacao_de_bem")) {
 
@@ -526,21 +531,26 @@ public class Main {
 						searchGood = controllGoods.findByCode(code);
 						bot.execute(new SendMessage(update.message().chat().id(),
 								"Nome: " + searchGood.getGoodsName() +
-								"\n|Localização atual: " + searchGood.getGoodsLocation() +
-								"\n|Digite a nova localização: "));
-						status = STATE.WAITING_NEW_LOCATION;
+								"\n| Localização atual: " + searchGood.getGoodsLocation()));
+						
+						bot.execute(new SendMessage(update.message().chat().id(),
+								"Aperte qualquer tecla para listar as localizações disponíveis para troca: "));
+
+						status = STATE.LIST_LOCATIONS;
+						change = true;
 
 					} catch (OffTheList e) {
 
 						bot.execute(new SendMessage(update.message().chat().id(),
 								e.getMessage()));
+						status = STATE.NULL;
+						
 					}
 					
 				}
 
 				else if (status == STATE.WAITING_NEW_LOCATION) {
-					
-					location = update.message().text();
+
 					name = searchGood.getGoodsName();
 					description = searchGood.getGoodsDescription();
 					code = searchGood.getGoodsCode();
@@ -548,7 +558,10 @@ public class Main {
 					
 					controllGoods.deleteByCode(code);
 					
-					bot.execute(new SendMessage(update.message().chat().id(),"Localização do bem foi atualizado com sucesso!")); 
+					bot.execute(new SendMessage(update.message().chat().id(),"Localização do bem foi atualizado com sucesso!"));
+					bot.execute(new SendMessage(update.message().chat().id(),
+							"Nome: " + searchGood.getGoodsName() +
+							"\n| Nova localização: " + location));
 					
 					controllGoods.register(name, description, code, location, category);
 					status = STATE.NULL;

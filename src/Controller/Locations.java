@@ -21,12 +21,16 @@ public class Locations extends Controller{
         locations.add(default_location);
     }
 	
-    /** Lists all LOCATIONS running through arraylist locations */
+    /** Lists all LOCATIONS running through arraylist locations
+     * @return locations */
 	@Override
     public ArrayList<Location> list(){
     	return locations;
     }
-
+	/** This method search a location by name
+	 * @param searchName String - user searched name
+	 * @return true - if the location name searched exist or return a Exception saying the location doesn't exist
+	 * */
 	@Override
 	public boolean findByName(String searchName) throws OffTheList{
 		for (Location local: locations) {
@@ -37,7 +41,9 @@ public class Locations extends Controller{
 
 		throw new OffTheList("A localização que você buscou não existe, tente novamente.");
 	}
-	
+	/** This method verify if the arrayList of locations is empty
+	 * throw for an exception
+	 * */
 	@Override
 	public void sizeOfList() throws EmptyList {
 		if(locations.size() == 0) {

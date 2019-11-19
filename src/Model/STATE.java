@@ -1,5 +1,5 @@
 package Model;
-
+/** State machine created */
 public enum STATE {
 	NULL, 
 	WAITING_GOOD_NAME, WAITING_GOOD_DESCRIPTION, WAITING_GOOD_CODE,

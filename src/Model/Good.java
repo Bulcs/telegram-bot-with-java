@@ -1,5 +1,12 @@
 package Model;
 public class Good {
+	/** 
+	 * @param goodsName String
+	 * @param goodsDescription String
+	 * @param goodsCode String
+	 * @param goodsLocation String
+	 * @param goodsCategory String
+	 **/
     private String goodsName;
     private String goodsDescription;
     private String goodsCode;
@@ -8,13 +15,11 @@ public class Good {
     
 
     /** Creates a good.
-     * @param goodsName The good's  name.
-     * @param goodsDescription The good’s description.
-     * @param goodsCode The good's code
-     *
-     * Não fiz a parte de localização e categoria porque vai ter que fazer um rolê de exceção
-     *                  (pra ver se as coisas que a pessoa ta passando existem) e porque tem que ver
-     *                  como vai fazer pra buscar isso direitinho
+     * @param goodsName The goods  name.
+     * @param goodsDescription The goods description.
+     * @param goodsCode The goods code
+     * @param goodsLocation the goods location
+     * @param goodsCategory the goods category
      */
     public Good(String goodsName, String goodsDescription, String goodsCode, 
     		String goodsLocation, String goodsCategory){
@@ -24,23 +29,28 @@ public class Good {
         this.goodsLocation = goodsLocation;
         this.goodsCategory = goodsCategory;
     }
-
+    /** Method get the good name
+     * @return goodsName */
     public String getGoodsName(){
         return this.goodsName;
     }
-
+    /** Method get the good description
+     * @return goodsDescription */
     public String getGoodsDescription(){
         return this.goodsDescription;
     }
-
+    /** Method get the good code
+     * @return goodsCode */
     public String getGoodsCode(){
         return this.goodsCode;
     }
-    
+    /** Method get the good location
+     * @return goodsLocation */
     public String getGoodsLocation() {
     	return this.goodsLocation;
     }
-    
+    /** Method get the good category
+     * @return goodsCategory */
     public String getGoodsCategory() {
     	return this.goodsCategory;
     }
